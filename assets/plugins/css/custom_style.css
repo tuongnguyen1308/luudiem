@@ -1,0 +1,162 @@
+#menu-noshadow
+{
+    box-shadow:0 0 0 0 !important;
+}
+.text-bold{
+    font-weight: bold;
+}
+.navbar-top-links > li:hover{
+    background-color: #048a6f;
+}
+.sidebar-collapse{
+    font-size: 13px;
+}
+.height-15{
+    height: 15px;
+}
+.form-horizontal .control-label {
+    padding-top: 7px;
+    margin-bottom: 0;
+    text-align: right;
+}
+.control-label-left {
+    padding-top: 5px;
+    margin-bottom: 0;
+    text-align: left;
+}
+.control-label-center {
+    padding-top: 5px;
+    margin-bottom: 0;
+    text-align: center;
+}
+.inline-flex{
+    display: inline-flex!important;
+}
+.box-avatar-4x6{
+    width: 3.99cm;
+    height: 5.99cm;
+    border: 1px dashed #333333;
+    display: table-cell;
+    vertical-align: middle;
+}
+.fileAnhHoSo{
+    width: 4cm;
+    height: 6cm;
+    margin-top: -6cm;
+    z-index: 9999;
+    opacity: 0;
+}
+#avatar{
+    width: 4cm;
+    height: 6cm;
+    margin-top: -6cm;
+    position: absolute;
+}
+#avatarprint{
+    width: 4cm;
+    height: 6cm;
+}
+.fw-300{
+    font-weight: 300;
+}
+.help-block{
+    color: #192ecd;
+}
+.note-editor{
+    border: 1px solid #e5e6e7;
+}
+.ck-content{
+    min-height: 120px;
+}
+.cursor-point{
+    cursor: pointer;
+}
+textarea{
+    resize: none;
+}
+.tab-pane{
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+ul.nav-tabs > li.active{
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+.nav-tabs>li>a{
+    margin-right: 0px;
+}
+.tabs-container{
+    margin-bottom: 40px;
+}
+.table > thead > tr > th{
+    vertical-align: middle;
+}
+.text-italic{
+    font-style: italic;
+    font-weight: unset;
+}
+.m-t--sm{
+    margin-top: -10px;
+}
+.p-t-label{
+    padding-top: 7px;
+}
+.full-width{
+    width: 100%;
+}
+.titleprint{
+    width: 100%;
+    position: relative;
+    height: 6cm;
+}
+.bot-1-cm{
+    bottom: 1cm;
+}
+.pos-abs{
+    position: absolute;
+}
+.box-check{
+    display:inline-block;
+    vertical-align: top;
+    padding-right: 1em;
+    line-height: 1em;
+    width: 1em;
+    height:1em;
+    text-align: center;
+    color: #333;
+    border: 1px solid #333;
+}
+.form-inline .input-group{
+    display: inline-flex;
+}
+.width-2-center{
+    width: 2cm!important;
+    text-align: center;
+}
+.width-3-center{
+    width: 3cm!important;
+    text-align: center;
+}
+.input-group-addon{
+    padding-top: 8px;
+    background-color: #eee;
+}
+td{
+    vertical-align: middle!important;
+}
+.height-10 {
+    height: 10px;
+}
+.fileMinhChung{
+    color: inherit;
+    font-size: 15px;
+}
+.fileMinhChung:hover{
+    font-weight: bold;
+}
+@media screen and (max-width: 425px){
+    .response-m-l{
+        margin-left: 0px;
+    }
+    .pull-right-xs{
+        float: right;
+    }
+}

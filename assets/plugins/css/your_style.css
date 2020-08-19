@@ -1,0 +1,161 @@
+/*
+ * It is advised not to edit the smartadmin_production.css
+ * as this will override any changes you make in the 
+ * later versions of this theme. 
+ * 
+ * We advise that you use use this CSS to override 
+ * SmartAdmin styles. 
+ * 
+ * Rename the stylesheet to whatever your liking so it will stay
+ * unique to you with each update of SmartAdmin.
+ */
+
+/*
+ * INDEX
+ * 
+ * - HTML
+ * - BODY
+ * - CUSTOM STYLES
+ */
+body{
+    background-color: #f8fafc;
+    font-family: Nunito,sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    color: #000;
+    font-size: 14px;
+}
+
+.banner{
+    float: left;
+    width: 100%;
+    position: relative;
+    margin-bottom: 15px;
+}
+.banner img{
+    width: 100%;
+}
+.wrapper{
+    padding: 0 15px;
+}
+
+.card {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    margin-bottom: 5px;
+    border-radius: .25rem;
+}
+.card-body {
+    -webkit-box-flex: 1;
+    flex: 1 1 auto;
+    padding: 25px;
+}
+.para-head{
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+.p-info{
+    margin-bottom: 15px;
+}
+.border-right {
+    border-right: 1px solid #dee2e6;
+}
+.nav-header{
+    background: none;
+    background-color: #9f224e;
+    padding: 15px 25px;
+}
+.navbar-static-side{
+    bottom: 0;
+    right: 0;
+    padding-right: 15px;
+}
+.navbar-static-side{
+    width: 28%;
+    position: absolute;
+}
+.noselecttext {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+.capcha{
+    font-size: 16px;
+    display: inline-block;
+    padding: 8px;
+}
+.has-error .form-control {
+    border-color: #ed5565!important;
+}
+.logo-name{
+    font-size: 130px!important;
+    font-weight: 750;
+    letter-spacing: 0px; 
+    margin-left: -50px;
+}
+.nav-header .text-muted {
+    color: #fff;
+}
+.footer-danger{
+    background-color: #9f224e;
+    padding: 10px;
+    font-size: 18px;
+    color: #fff;
+    float: left;
+    margin-top: 10px;
+}
+.footer-danger img{
+    height: 50px;
+}
+.footer-danger a{
+    color: #fff;
+}
+.footer-danger a:hover{
+    color: #337ab7;
+}
+.hr-head{
+    margin: auto;
+    width: 45%;
+    border-top: 1px solid #000;
+    margin-bottom: 50px;
+}
+.height-10{
+    height: 10px;
+}
+@media screen and (max-width: 991px){
+    .border-right {
+        border-right: none;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dee2e6;
+    }
+}
+@media screen and (max-width: 767px){
+    .nav-header{
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+    .navbar-static-side{
+        width: 62%;
+    }
+    .float-left-xs{
+        float: left!important;
+    }
+}
+.panel
+{
+    background-color: #d4eccd!important;
+}
