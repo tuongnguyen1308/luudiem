@@ -44,9 +44,9 @@
                                 {foreach $DSSV as $key => $value}
                                 <tr>
                                     <td class="text-center">{$key+1}</td>
-                                    <td class="">{$value.sKhoaHoc}</td>
-                                    <td class="">{$value.sLop}</td>
-                                    <td class="">{$value.sMaSV}</td>
+                                    <td class="">{$value.iKhoa}</td>
+                                    <td class="">{$value.sTenLop}</td>
+                                    <td class="">{$value.PK_iMaNhapHoc}</td>
                                     <td class="">{$value.sHo} {$value.sTen}</td>
                                     <td class="text-center">{date('d/m/Y', strtotime($value.dNgaySinh))}</td>
                                     <td class="">{$value.sGioiTinh}</td>
@@ -55,7 +55,7 @@
                                     </td> -->
                                     <td class="text-center">
 										<form action="" method="post">
-											<button type="button" class="btn btn-sm btn-success btnView" title="Xem điểm" data-ma="{$value.PK_iMaSV}" data-toggle="modal" data-target="#modalView">
+											<button type="button" class="btn btn-sm btn-success btnView" title="Xem điểm" data-ma="{$value.PK_iMaNhapHoc}" data-toggle="modal" data-target="#modalView">
 												<i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
 											</button>
 											<!-- <button type="button" class="btn btn-sm btn-primary btnEdit" title="Sửa" data-ma="{$value.PK_iMaSV}" data-toggle="modal" data-target="#modalFix">
@@ -312,17 +312,6 @@
         $('#tbl').DataTable();
 
 
-        $(".btnEdit").click(function(){
-            $.post(
-                "",
-                {
-                    action: 'getSVGrade',
-                    masv: $(this).data('ma')
-                },
-                function(res){
-					console.log(res[0]['PK_iMaDiem']);
-            }, 'json');
-        });
 
 		$(".btnView").click(function(){
 			$.post(
@@ -338,10 +327,10 @@
                     $('#list_grade2').html('');
 					res.forEach(mon => {
                         let list_grade = '<tr>';
-                        list_grade += '<td>' + mon['sMon'] + '</td>';
-                        list_grade += '<td>' + mon['iThangDiem10'] + '</td>';
-                        list_grade += '<td>' + mon['sThangDiemChu'] + '</td>';
-                        list_grade += '<td>' + mon['iThangDiem4'] + '</td>';
+                        list_grade += '<td>' + mon['sTenMon'] + '</td>';
+                        list_grade += '<td>' + mon['iDT10'] + '</td>';
+                        list_grade += '<td>' + mon['sDTChu'] + '</td>';
+                        list_grade += '<td>' + mon['iDT4'] + '</td>';
                         list_grade += '</tr>';
                         if (i++ < res.length / 2) {
                             $('#list_grade').append(list_grade);

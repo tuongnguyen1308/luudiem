@@ -61,71 +61,153 @@ class Clistsv extends MY_Controller
 			$res = 0;
             $path = $_FILES['importExcel']['tmp_name'];
             $object = PHPExcel_IOFactory::load($path);
-            // pr($object->getWorksheetIterator());
+			// pr($object->getWorksheetIterator());
             foreach ($object->getWorksheetIterator() as $worksheet) {
                 // pr($worksheet->getHighestColumn());
                 $lastRow		= $worksheet->getHighestRow();
 				$hightestCol	= $worksheet->getHighestColumn();
 				$lastColumn		= PHPExcel_Cell::columnIndexFromString($hightestCol);
-				// pr($lastColumn);
-				// pr($worksheet->getCellByColumnAndRow(12, 1)->getValue());
-                for ($row=4; $row <= $lastRow; $row++) {
-					$new_sv = array(
-						'PK_iMaSV'	=> $row + time()%1000000000 . rand(000,999),
-						'FK_iMaTK'	=> $this->session->userdata('user')['ma'],
-						'sLop'		=> $worksheet->getCellByColumnAndRow(1,$row)->getValue(),
+				// pr($hightestCol);
+				
+				#region insert_ctdt
+				$ctdt = array(
+					'sTenBac'	=> $worksheet->getCellByColumnAndRow(3,4)->getValue(),
+					'sTenDonVi'	=> $worksheet->getCellByColumnAndRow(3,5)->getValue(),
+					'sNam'		=> $worksheet->getCellByColumnAndRow(3,6)->getValue(),
+					'sTenHe'	=> $worksheet->getCellByColumnAndRow(7,4)->getValue(),
+					'sTenNganh'	=> $worksheet->getCellByColumnAndRow(7,5)->getValue(),
+					'iKhoa'		=> $worksheet->getCellByColumnAndRow(7,6)->getValue(),
+				);
+				$ctdt = $this->Mlistsv->insertCTDT($ctdt);
+				#endregion
+
+				$sttmon = array();
+				#region import_mon
+				for ($column = 7, $i = 1; $column < $lastColumn - 5;) {
+					$mon = array(
+						'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
+						'iSoTinChi'	=> 0
+					);
+					if ($column < $lastColumn - 8) {
+						$mon['iSoTinChi'] = $worksheet->getCellByColumnAndRow($column, 8)->getValue();
+						$column += 3;
+					}
+					else {
+						$column++;
+					}
+					
+					array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i++));
+
+				}
+				#endregion
+				// pr($sttmon);
+				#region insert_sinh_vien_lop
+                for ($row = 10; $row <= $lastRow; $row++) {
+					$data_sv = array(
+						'iSTT'		=> $worksheet->getCellByColumnAndRow(0,$row)->getValue(),
+						'sTenLop'	=> $worksheet->getCellByColumnAndRow(1,$row)->getValue(),
 						'sMaSV'		=> $worksheet->getCellByColumnAndRow(2,$row)->getValue(),
 						'sHo'		=> $worksheet->getCellByColumnAndRow(3,$row)->getValue(),
 						'sTen'		=> $worksheet->getCellByColumnAndRow(4,$row)->getValue(),
 						'dNgaySinh'	=> date("Y-m-d", strtotime($worksheet->getCellByColumnAndRow(5,$row)->getValue())),
-						'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
-						'sKhoaHoc'	=> $worksheet->getCellByColumnAndRow(7,$row)->getValue(),
-						'sHe'		=> $worksheet->getCellByColumnAndRow(8,$row)->getValue(),
-						'sNganhHoc'	=> $worksheet->getCellByColumnAndRow(9,$row)->getValue(),
-						'sKhoa'		=> $worksheet->getCellByColumnAndRow(10,$row)->getValue(),
-						'sBacHoc'	=> $worksheet->getCellByColumnAndRow(11,$row)->getValue()
+						'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue()
 					);
-					foreach ($new_sv as $key => $value) {
+					foreach ($data_sv as $key => $value) {
 						if (!$value) {
-							$res = -2;
-							$this->returnWithMess($res, $list_ma_sv);
+							$mess = "Thông tin sinh viên không được để trống";
+							return;
+							// $this->returnWithMess($res, $list_ma_sv);
 						}
 					}
-					$res = $this->Mlistsv->importSV($new_sv);
-					if ($res == -1) {
-						$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
-					}
-					array_push($list_ma_sv, $res);
-
-					$string = '';
-					for ($column = 12; $column < $lastColumn - 9;) {
-						$new_grade = array(
-							'FK_iMaSV'		=> $new_sv['PK_iMaSV'],
-							'sMon'			=> $worksheet->getCellByColumnAndRow($column, 1)->getValue(),
-							'iSoTinChi'		=> $worksheet->getCellByColumnAndRow($column, 2)->getValue(),
-							'iThangDiem10'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-							'sThangDiemChu'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-							'iThangDiem4'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue()
-						);
-
-						foreach ($new_grade as $k => $v) {
-							if (!$v) {
-								$res = -4;
-								$this->returnWithMess($res, $list_ma_sv, $column.' '.$row);
-							}
+					$data_sv['FK_iMaNhapHoc'] = $this->Mlistsv->insertSV($data_sv, $ctdt);
+					$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
+					
+					for ($column = 7, $i = 0; $column < $lastColumn - 5;) {
+						if ($column < $lastColumn - 8) {
+							$diem = array(
+								'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+								'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+								'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+								'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
+								'FK_iMaMonCTDT'	=> $sttmon[$i],
+							);
 						}
-						// pr($new_grade);
-						$res = $this->Mlistsv->ImportGrade($new_grade, $column);
-						if ($res == -3) {
-							$this->returnWithMess($res, $list_ma_sv, $new_grade['sMon']);
+						else {
+							$diem = array(
+								'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+								'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
+								'FK_iMaMonCTDT'	=> $sttmon[$i],
+							);
+							// pr($diem);
 						}
+						$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
 
-						// $string .= $cell;
-						// pr($new_grade);
-						//  Do what you want with the cell
 					}
-					// pr($string);
 				}
+
+				#endregion
+
+				$res = 1;
+
+
+                // for ($row=4; $row <= $lastRow; $row++) {
+				// 	$sv = array(
+				// 		'PK_iMaSV'	=> $row + time()%1000000000 . rand(000,999),
+				// 		'FK_iMaTK'	=> $this->session->userdata('user')['ma'],
+				// 		'sLop'		=> $worksheet->getCellByColumnAndRow(1,$row)->getValue(),
+				// 		'sMaSV'		=> $worksheet->getCellByColumnAndRow(2,$row)->getValue(),
+				// 		'sHo'		=> $worksheet->getCellByColumnAndRow(3,$row)->getValue(),
+				// 		'sTen'		=> $worksheet->getCellByColumnAndRow(4,$row)->getValue(),
+				// 		'dNgaySinh'	=> date("Y-m-d", strtotime($worksheet->getCellByColumnAndRow(5,$row)->getValue())),
+				// 		'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
+				// 		'sKhoaHoc'	=> $worksheet->getCellByColumnAndRow(7,$row)->getValue(),
+				// 		'sHe'		=> $worksheet->getCellByColumnAndRow(8,$row)->getValue(),
+				// 		'sNganhHoc'	=> $worksheet->getCellByColumnAndRow(9,$row)->getValue(),
+				// 		'sKhoa'		=> $worksheet->getCellByColumnAndRow(10,$row)->getValue(),
+				// 		'sBacHoc'	=> $worksheet->getCellByColumnAndRow(11,$row)->getValue()
+				// 	);
+				// 	foreach ($new_sv as $key => $value) {
+				// 		if (!$value) {
+				// 			$res = -2;
+				// 			$this->returnWithMess($res, $list_ma_sv);
+				// 		}
+				// 	}
+				// 	$res = $this->Mlistsv->importSV($new_sv);
+				// 	if ($res == -1) {
+				// 		$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
+				// 	}
+				// 	array_push($list_ma_sv, $res);
+
+				// 	$string = '';
+				// 	for ($column = 12; $column < $lastColumn - 9;) {
+				// 		$new_grade = array(
+				// 			'FK_iMaSV'		=> $new_sv['PK_iMaSV'],
+				// 			'sMon'			=> $worksheet->getCellByColumnAndRow($column, 1)->getValue(),
+				// 			'iSoTinChi'		=> $worksheet->getCellByColumnAndRow($column, 2)->getValue(),
+				// 			'iThangDiem10'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+				// 			'sThangDiemChu'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+				// 			'iThangDiem4'	=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue()
+				// 		);
+
+				// 		foreach ($new_grade as $k => $v) {
+				// 			if (!$v) {
+				// 				$res = -4;
+				// 				$this->returnWithMess($res, $list_ma_sv, $column.' '.$row);
+				// 			}
+				// 		}
+				// 		// pr($new_grade);
+				// 		$res = $this->Mlistsv->ImportGrade($new_grade, $column);
+				// 		if ($res == -3) {
+				// 			$this->returnWithMess($res, $list_ma_sv, $new_grade['sMon']);
+				// 		}
+
+				// 		// $string .= $cell;
+				// 		// pr($new_grade);
+				// 		//  Do what you want with the cell
+				// 	}
+				// 	// pr($string);
+				// 	break;
+				// }
 			}
 			$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
         }
