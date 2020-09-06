@@ -18,14 +18,28 @@ class Mlistsv extends MY_Model
 	{
 		// $this->db->where('FK_iMaTK', $MaUyVien);
 		// $this->db->join('dm_nganh','dm_nganh.PK_iMaNganh = tbl_thongtinSV.FK_iMaNganh', 'inner');
-		$this->db->order_by('sTen', 'asc');
+		$this->db->order_by('sKhoaHoc desc, sLop asc, sTen asc');
 		return $this->db->get('tbl_sinhvien')->result_array();
 	}
-	public function deleteSV($MaUyVien)
+	
+	public function getSVGrade($masv)
 	{
-		$this->db->where('FK_iMaTK', $MaUyVien);
-		$this->db->join('dm_nganh','dm_nganh.PK_iMaNganh = tbl_thongtinSV.FK_iMaNganh', 'inner');
-		return $this->db->get('tbl_thongtinSV')->result_array();
+		$this->db->where('FK_iMaSV', $masv);
+		// $this->db->order_by('PK_iMaDiem', 'asc');
+		return $this->db->get('tbl_diem')->result_array();
+		// $this->db->where('FK_iMaTK', $masv);
+		// $res = $this->db->get('tbl_diem')->result_array();
+		// return $res;
+	}
+	public function delSV($masv)
+	{
+		$this->db->where('FK_iMaSV', $masv);
+		$this->db->delete('tbl_diem');
+		$res += $this->db->affected_rows();
+		$this->db->where('PK_iMaSV', $masv);
+		$this->db->delete('tbl_sinhvien');
+		$res += $this->db->affected_rows();
+		return $res;
 	}
 	public function importSV($new_sv)
 	{
@@ -65,7 +79,7 @@ class Mlistsv extends MY_Model
 		$this->db->where('FK_iMaSV',$new_grade['FK_iMaSV']);
 		$duplicate = $this->db->get('tbl_diem')->result_array();
 		if(!$duplicate) {
-			$rd = $i + time()%1000000000 . rand(000,999);
+			$rd = $i . time()%1000000000 . rand(100,999);
 			$new_grade['PK_iMaDiem'] = $rd;
 			$this->db->insert('tbl_diem',$new_grade);
 		}

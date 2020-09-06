@@ -22,11 +22,23 @@ class Clistsv extends MY_Controller
     {
         if ($this->input->post('submitImport')) {
             $this->importSV();
-        }
+		}
+		else if ($this->input->post('delSV')) {
+            $this->delSV();
+		}
+		else if ($this->input->post('action') == 'getSVGrade') {
+			$this->getSVGrade();
+		}
+		else if ($this->input->post('download_demo')) {
+			$this->download_demo();
+		}
+		else if ($this->input->post('export')) {
+			$this->getDataToExport();
+		}
         $session = $this->session->userdata('user');
         $data = array(
             'currentpage'   => 'list',
-            'DSSV'          =>$this->Mlistsv->getDSSV($session['ma'])
+            'DSSV'          => $this->Mlistsv->getDSSV($session['ma'])
         );  
         //pr($data['DSSV']);
         $temp['data'] = $data;
@@ -34,30 +46,12 @@ class Clistsv extends MY_Controller
         $this->load->view('layouts/Vlayout', $temp);
     }
 
-
-    // public function fetchData()
-    // {
-    //     $data['DSSV'] = $this->Mlistsv->getDSSV($session['ma']);
-    //     $output = '';
-    //     foreach ($data['DSSV'] as $key => $value) {
-    //         $output .=
-    //             '<tr>
-    //                 <td>'. $key++ .'</td>
-    //                 <td>'.$value['sLop'].'</td>
-    //                 <td>'.$value['PK_iMaSV'].'</td>
-    //                 <td>'.$value['sHo'] . ' ' . $value['sTen'].'</td>
-    //                 <td class="text-center">'. date('d/m/Y', strtotime($value['dNgaySinh']).'</td>
-    //                 <td>'.$value['sKhoaHoc'].'</td>
-    //                 <td class="text-center">
-    //                     <a class="btn btn-success" target="_blank" href="{$url}export09?id={$value.PK_iMaUV}"><i class="fa fa-print" aria-hidden="true"></i></a>
-    //                 </td>
-    //                 <td class="text-center">
-    //                     <a href="{$url}info-ung-vien?id={$value.PK_iMaUV}" target="_blank" class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i> Thẩm định</a>
-    //                 </td>
-    //             </tr>';
-    //     }
-    //     exit($output);
-    // }
+	public function getSVGrade()
+	{
+		$masv = $this->input->post('masv');
+		$db = $this->Mlistsv->getSVGrade($masv);
+		exit(json_encode($db));
+	}
     
     public function importSV()
     {
@@ -120,6 +114,7 @@ class Clistsv extends MY_Controller
 								$this->returnWithMess($res, $list_ma_sv, $column.' '.$row);
 							}
 						}
+						// pr($new_grade);
 						$res = $this->Mlistsv->ImportGrade($new_grade, $column);
 						if ($res == -3) {
 							$this->returnWithMess($res, $list_ma_sv, $new_grade['sMon']);
@@ -135,6 +130,16 @@ class Clistsv extends MY_Controller
 			$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
         }
     }
+
+	public function delSV()
+	{
+		$masv = $this->input->post('delSV');
+		$res = $this->Mlistsv->delSV($masv);
+		if ($res > 0) {
+			setMessages('success', 'Đã xoá sinh viên');
+		}
+		redirect(base_url().'listsv');
+	}
 
 	public function returnWithMess($res, $list_ma_sv, $masv = '')
 	{
@@ -163,5 +168,108 @@ class Clistsv extends MY_Controller
 			$this->Mlistsv->undoImportSV($list_ma_sv);
 		}
 		redirect(base_url().'listsv');
+	}
+
+	public function download_demo()
+	{
+		$link = base_url().'assets/demo_file/demo.xlsx';
+		$ext  = substr(strrchr($link, '.'), 1);
+		header('Content-Description: File Transfer');
+		header('Content-Type: application/octet-stream');
+		header('Content-Disposition: attachment; filename="demo.xlsx"');
+		readfile($link);
+		exit();
+	}
+
+	public function getDataToExport()
+	{
+        $session = $this->session->userdata('user');
+		$sv = $this->Mlistsv->getDSSV($session['ma']);
+		foreach ($sv as $k => $v) {
+			$sv[$k]['diem'] = $this->Mlistsv->getSVGrade($v['PK_iMaSV']);
+		}
+		// pr($sv);
+
+		$object = new PHPExcel();
+
+		$object->setActiveSheetIndex(0);
+
+		$table_columns = array("STT", "Lớp", "Mã SV", "Họ và", "Tên", "Ngày sinh", "Giới", "Khoá", "Hệ", "Ngành", "Khoa", "Bậc học");
+
+		$column = 0;
+		$row = 1;
+		$from_col = 'A';
+		$to_col = 'A';
+		$from_row = 1;
+		$to_row = 3;
+		foreach($table_columns as $field)
+		{
+			// echo $test++ . '\n';
+			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $field);
+			$from_col = ++$to_col;
+		}
+		// pr($test);
+		$to_col++;
+		$to_col++;
+		$to_row = 1;
+		foreach ($sv[0]['diem'] as $k => $v) {
+			// pr($v);
+			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+			$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sMon']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['iSoTinChi']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
+			$row-=2;
+			for ($i=0; $i < 3; $i++) { 
+				$from_col++;
+				$to_col++;
+			}
+		}
+		$column = 0;
+		$row = 4;
+		foreach ($sv as $k => $v) {
+			// pr($v);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, ++$k);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sLop']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sMaSV']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHo']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTen']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgaySinh'])));
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGioiTinh']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sKhoaHoc']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHe']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sNganhHoc']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sKhoa']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sBacHoc']);
+			foreach ($v['diem'] as $stt => $diem) {
+				// pr($diem);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iThangDiem10']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sThangDiemChu']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iThangDiem4']);
+			}
+			$row++;
+			$column = 0;
+		}
+		$center_style = array(
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER
+			)
+		);
+		$object->getDefaultStyle()->applyFromArray($center_style);
+
+		$left_style = array(
+			'alignment' => array(
+				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT
+			)
+		);
+		$object->getActiveSheet()->getStyle("D1:E".$row)->applyFromArray($left_style);
+	
+		$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+		header('Content-Type: application/vnd.ms-excel');
+		header('Content-Disposition: attachment;filename="Danh sách sinh viên.xls"');
+		$object_writer->save('php://output');
 	}
 }

@@ -1,15 +1,23 @@
 <div class="wrapper wrapper-content animated fadeInRight">
+    <form action="" method="post">
+        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+        <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;" disabled>Yêu cầu: Các ô điểm trong file excel không được bỏ trống! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
+    </form>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
+                    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                        <button name="export" value="1" class="float-right btn btn-sm btn-success" type="submit">Xuất Excel</button>
+                    </form>
                     <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
                             <div class="form-group mb-0" id="customFile" lang="vi">
                                 <div class="text-uppercase float-left mt-2">Danh sách sinh viên</div>
                                 <div class="float-right">
                                     <span>Thêm file Excel: </span>
                                     <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
-                                    <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary">Lưu</button>
+                                    <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Lưu</button>
                                 </div>
                             </div>
                         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
@@ -21,12 +29,12 @@
                         <thead>
                             <tr>
                                 <th class="text-center" width="8%">STT</th>
+                                <th class="text-center">Khoá</th>
                                 <th width="10%">Lớp</th>
                                 <th class="text-center" width="15%">Mã SV</th>
                                 <th class="text-center">Họ và Tên</th>
                                 <th class="text-center">Ngày sinh</th>
                                 <th width="8%" class="text-center">Giới</th>
-                                <th class="text-center">Khoá</th>
                                 <!-- <th class="text-center" width="11%">In mẫu</th> -->
                                 <th class="text-center">Tác vụ</th>
                             </tr>
@@ -36,19 +44,31 @@
                                 {foreach $DSSV as $key => $value}
                                 <tr>
                                     <td class="text-center">{$key+1}</td>
+                                    <td class="">{$value.sKhoaHoc}</td>
                                     <td class="">{$value.sLop}</td>
                                     <td class="">{$value.sMaSV}</td>
                                     <td class="">{$value.sHo} {$value.sTen}</td>
                                     <td class="text-center">{date('d/m/Y', strtotime($value.dNgaySinh))}</td>
                                     <td class="">{$value.sGioiTinh}</td>
-                                    <td class="">{$value.sKhoaHoc}</td>
                                     <!-- <td class="text-center">
                                         <a class="btn btn-success" target="_blank" href="{$url}export09?id={$value.PK_iMaSV}"><i class="fa fa-print" aria-hidden="true"></i></a>
                                     </td> -->
                                     <td class="text-center">
-                                        <a href="{$url}info-ung-vien?id={$value.PK_iMaSV}" target="_blank" class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i> Sửa</a>
+										<form action="" method="post">
+											<button type="button" class="btn btn-sm btn-success btnView" title="Xem điểm" data-ma="{$value.PK_iMaSV}" data-toggle="modal" data-target="#modalView">
+												<i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
+											</button>
+											<!-- <button type="button" class="btn btn-sm btn-primary btnEdit" title="Sửa" data-ma="{$value.PK_iMaSV}" data-toggle="modal" data-target="#modalFix">
+												<i class="fa fa-pencil" aria-hidden="true" title="Sửa"></i>
+											</button> -->
+											<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+											<button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaSV}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+												<i class="fa fa-trash" aria-hidden="true" title="Xoá"></i>
+											</button>
+										</form>
+                                        <!-- <a href="{$url}info-ung-vien?id={$value.PK_iMaSV}" target="_blank" class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i> Sửa</a> -->
                                     </td>
-                                    <!-- <button class="btn btn-danger" type="submit" value="{$value.PK_iMaUV}" name="xoaBanTrichNgang" onclick="return confirm('Bạn chắc chắn muốn xóa?')"><i class="fa fa-trash" aria-hidden="true"></i> Xóa</button> -->
+                                    
                                 </tr>
                                 {/foreach}
                                 {else}
@@ -66,22 +86,22 @@
     </div>
 </div>
 
-<!-- <div class="modal fade" id="modalAdd" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-md" role="document">
+
+<!-- Modal -->
+<div class="modal fade" id="modalFix" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h3 class="modal-title">Thêm ứng viên</h3>
+				<h4 class="modal-title">Sửa thông tin</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
 			</div>
-
-			<div class="modal-body">
-				<form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-					<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-
-                    <div class="form-group">
-                        <label class="col-md-5 control-label">Chức danh xét tuyển:</label>
+			<form action="" method="post" enctype="multipart/form-data">
+				<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+				<div class="modal-body">
+					<div class="form-group">
+                        <label class="col-md-5 control-label">Họ tên:</label>
                         <div class="col-md-7">
                             <select class="form-control" name="data[FK_iMaCD]" id="FK_iMaCD">
                                 {foreach $ds_chucdanh as $k => $v}
@@ -177,16 +197,57 @@
                         <input type="text" class="form-control" name="data[sCoSoXetChucDanh]" id="sCoSoXetChucDanh" placeholder="" value="{(!empty($ungvien))?$ungvien.sCoSoXetChucDanh:''}">
                         </div>
                     </div>
-
-                    <div class="modal-footer">
-                        <button name="addInfoungvien" id="addInfoungvien" type="submit" class="btn btn-primary" value="1">Lưu</button>
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button>
-                    </div>
-                </form>
+				</div>
+				<div class="modal-footer">
+					<button type="reset" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+					<button type="submit" class="btn btn-primary">Lưu</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="modalView" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Xem điểm</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+			</div>
+			<div class="modal-body row">
+				<table class="col-6 table table-striped table-inverse table-responsive pl-0 pr-1">
+					<thead>
+						<tr>
+                            <th>Tên môn</th>
+                            <th>ĐT 10</th>
+                            <th>ĐT chữ</th>
+                            <th>ĐT 4</th>
+						</tr>
+					</thead>
+					<tbody id="list_grade">
+					</tbody>
+				</table>
+				<table class="col-6 table table-striped table-inverse table-responsive pr-0 pl-1">
+					<thead>
+						<tr>
+                            <th>Tên môn</th>
+                            <th>ĐT 10</th>
+                            <th>ĐT chữ</th>
+                            <th>ĐT 4</th>
+						</tr>
+					</thead>
+					<tbody id="list_grade2">
+					</tbody>
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="reset" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+				<button type="submit" class="btn btn-primary">Lưu</button>
 			</div>
 		</div>
 	</div>
-</div> -->
+</div>
 
 <style type="text/css">
 
@@ -251,34 +312,45 @@
         $('#tbl').DataTable();
 
 
-        // function load_data() {
-        //     $.ajax({
-        //         url: url + 'fetchData',
-        //         data:{
-        //             'action': 'getallrow'
-        //         },
-        //         method: 'post',
-        //         success: function (data) {
-        //             $('#tbody').html(data);
-        //         }
-        //     })
-        // }
+        $(".btnEdit").click(function(){
+            $.post(
+                "",
+                {
+                    action: 'getSVGrade',
+                    masv: $(this).data('ma')
+                },
+                function(res){
+					console.log(res[0]['PK_iMaDiem']);
+            }, 'json');
+        });
 
-        // $('#submitImport').on('click', (event) => {
-        //     event.preventDefault();
-        //     $.ajax({
-        //         url: url + 'importSV',
-        //         method: 'post',
-        //         data: new FormData(this),
-        //         contentType: false,
-        //         cache: false,
-        //         processData: false,
-        //         success: function (data) {
-        //             $('#submitImport').val('');
-        //             load_data();
-        //             alert(data);
-        //         }
-        //     })
-        // });
+		$(".btnView").click(function(){
+			$.post(
+				"",
+				{
+					action: 'getSVGrade',
+					masv: $(this).data('ma')
+				},
+				function(res){
+                    console.log(res.length);
+                    let i = 0;
+                    $('#list_grade').html('');
+                    $('#list_grade2').html('');
+					res.forEach(mon => {
+                        let list_grade = '<tr>';
+                        list_grade += '<td>' + mon['sMon'] + '</td>';
+                        list_grade += '<td>' + mon['iThangDiem10'] + '</td>';
+                        list_grade += '<td>' + mon['sThangDiemChu'] + '</td>';
+                        list_grade += '<td>' + mon['iThangDiem4'] + '</td>';
+                        list_grade += '</tr>';
+                        if (i++ < res.length / 2) {
+                            $('#list_grade').append(list_grade);
+                        }
+                        else {
+                            $('#list_grade2').append(list_grade);
+                        }
+					});
+			}, 'json');
+		});
     })
 </script>

@@ -123,4 +123,9 @@
     </script>
     {/if}
 </body>
+<style>
+    .bg-success {
+        border-radius: 0 0 .25rem .25rem;
+    }
+</style>
 </html>
