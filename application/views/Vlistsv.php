@@ -1,30 +1,44 @@
 <div class="wrapper wrapper-content animated fadeInRight">
     <form action="" method="post">
         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-        <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;" disabled>Yêu cầu: Các ô điểm trong file excel không được bỏ trống! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
+        <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;" disabled>Yêu cầu: Điền đầy đủ các giá trị trong file excel! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
     </form>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-                        <button name="export" value="1" class="float-right btn btn-sm btn-success" type="submit">Xuất Excel</button>
-                    </form>
-                    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                            <div class="form-group mb-0" id="customFile" lang="vi">
-                                <div class="text-uppercase float-left mt-2">Danh sách sinh viên</div>
-                                <div class="float-right">
-                                    <span>Thêm file Excel: </span>
-                                    <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
-                                    <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Lưu</button>
-                                </div>
-                            </div>
-                        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-                    </form>
+                    <div class="text-uppercase mt-2">Danh sách sinh viên</div>
                 </div>
 
                 <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                                <div class="form-group mb-0" id="customFile" lang="vi">
+                                    <div class="">
+                                        <span>Thêm file Excel: </span>
+                                        <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
+                                        <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Nhập file Excel</button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                            </form>
+                        </div>
+                        <div class="col-6">
+                            <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                                <div class="float-right form-inline">
+                                    <span>Chọn Khoá để xuất: </span>
+                                    <select name="iKhoa" class="form-control mr-3">
+                                        {foreach $listKhoa as $k => $v}
+                                            <option value="{$v.PK_iMaKhoa}">{$v.iKhoa}</option>
+                                        {/foreach}
+                                    </select>
+                                    <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                                    <button name="export" value="1" class="float-right btn btn-sm btn-success" type="submit">Xuất file Excel</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                     <table id="tbl" class="table table-striped table-inverse table-bordered">
                         <thead>
                             <tr>
@@ -55,9 +69,14 @@
                                     </td> -->
                                     <td class="text-center">
 										<form action="" method="post">
-											<button type="button" class="btn btn-sm btn-success btnView" title="Xem điểm" data-ma="{$value.PK_iMaNhapHoc}" data-toggle="modal" data-target="#modalView">
+                                            <a target="_blank" href="{$url}inbangdiem?masv={$value.PK_iMaNhapHoc}">
+                                                <button class="btn btn-success btn-sm" type="button">
+                                                    <i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
+                                                </button>
+                                            </a>
+											<!-- <button type="button" class="btn btn-sm btn-success btnView" title="Xem điểm" data-ma="{$value.PK_iMaNhapHoc}" data-toggle="modal" data-target="#modalView">
 												<i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
-											</button>
+											</button> -->
 											<!-- <button type="button" class="btn btn-sm btn-primary btnEdit" title="Sửa" data-ma="{$value.PK_iMaSV}" data-toggle="modal" data-target="#modalFix">
 												<i class="fa fa-pencil" aria-hidden="true" title="Sửa"></i>
 											</button> -->
@@ -88,7 +107,7 @@
 
 
 <!-- Modal -->
-<div class="modal fade" id="modalFix" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="modalFix" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -247,7 +266,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> -->
 
 <style type="text/css">
 
@@ -313,33 +332,33 @@
 
 
 
-		$(".btnView").click(function(){
-			$.post(
-				"",
-				{
-					action: 'getSVGrade',
-					masv: $(this).data('ma')
-				},
-				function(res){
-                    console.log(res.length);
-                    let i = 0;
-                    $('#list_grade').html('');
-                    $('#list_grade2').html('');
-					res.forEach(mon => {
-                        let list_grade = '<tr>';
-                        list_grade += '<td>' + mon['sTenMon'] + '</td>';
-                        list_grade += '<td>' + mon['iDT10'] + '</td>';
-                        list_grade += '<td>' + mon['sDTChu'] + '</td>';
-                        list_grade += '<td>' + mon['iDT4'] + '</td>';
-                        list_grade += '</tr>';
-                        if (i++ < res.length / 2) {
-                            $('#list_grade').append(list_grade);
-                        }
-                        else {
-                            $('#list_grade2').append(list_grade);
-                        }
-					});
-			}, 'json');
-		});
+		// $(".btnView").click(function(){
+		// 	$.post(
+		// 		"",
+		// 		{
+		// 			action: 'getSVGrade',
+		// 			masv: $(this).data('ma')
+		// 		},
+		// 		function(res){
+        //             console.log(res.length);
+        //             let i = 0;
+        //             $('#list_grade').html('');
+        //             $('#list_grade2').html('');
+		// 			res.forEach(mon => {
+        //                 let list_grade = '<tr>';
+        //                 list_grade += '<td>' + mon['sTenMon'] + '</td>';
+        //                 list_grade += '<td>' + mon['iDT10'] + '</td>';
+        //                 list_grade += '<td>' + mon['sDTChu'] + '</td>';
+        //                 list_grade += '<td>' + mon['iDT4'] + '</td>';
+        //                 list_grade += '</tr>';
+        //                 if (i++ < res.length / 2) {
+        //                     $('#list_grade').append(list_grade);
+        //                 }
+        //                 else {
+        //                     $('#list_grade2').append(list_grade);
+        //                 }
+		// 			});
+		// 	}, 'json');
+		// });
     })
 </script>

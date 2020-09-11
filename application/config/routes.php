@@ -15,6 +15,7 @@ $route['welcome']					= 'Cwelcome';
 //Uỷ viên
 $route['infouv']					= 'Cinfouv';
 $route['listsv']					= 'Clistsv';
+$route['inbangdiem']    			= 'Cinbangdiem';
 $route['info-ung-vien']				= 'Cinfoungvien';
 $route['muc1']			            = 'Cmuc1';
 $route['muc2']			            = 'Cmuc2';

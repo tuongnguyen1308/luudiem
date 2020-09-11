@@ -14,7 +14,7 @@ class Mlistsv extends MY_Model
 		$this->db->where('sPassword', sha1($password));
 		return $this->db->get('tbl_taikhoan')->row_array();
 	}
-	public function getDSSV($MaUyVien)
+	public function getDSSV($khoahoc = 'all')
 	{
 		// $this->db->where('FK_iMaTK', $MaUyVien);
 		// $this->db->join('dm_nganh','dm_nganh.PK_iMaNganh = tbl_thongtinSV.FK_iMaNganh', 'inner');
@@ -26,6 +26,11 @@ class Mlistsv extends MY_Model
 		$this->db->join('tbl_khoa','PK_iMaKhoa = tbl_nhaphoc.FK_iMaKhoa', 'inner');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		return $res;
+	}
+	
+	public function getListKhoa()
+	{
+		return $this->db->get('tbl_khoa')->result_array();
 	}
 	
 	public function getSVGrade($masv)
@@ -271,6 +276,7 @@ class Mlistsv extends MY_Model
 			'dNgaySinh' => $data_sv['dNgaySinh'],
 			'sGioiTinh' => $data_sv['sGioiTinh']
 		);
+		// pr($sv);
 		$this->db->insert('tbl_sinhvien',$sv);
 		// pr($this->db->affected_rows());
 		$conditional = array(
@@ -362,5 +368,46 @@ class Mlistsv extends MY_Model
 			return $duplicate['PK_iMaDiem'];
 		}
 	}
+	public function updateSV($data_sv)
+	{
+		$this->db->where('PK_iMaNhapHoc',$data_sv['sMaSV']);
+		$update = array(
+			'PK_iMaNhapHoc'		=> $data_sv['sMaSV'],
+			'sGDTC'				=> $data_sv['sGDTC'],
+			'sGDQP'				=> $data_sv['sGDQP'],
+			'sCDRNN'			=> $data_sv['sCDRNN'],
+			'sXLRenLuyen'		=> $data_sv['sXLRenLuyen'],
+			'sTBCTL'			=> $data_sv['sTBCTL'],
+			'iSoTCTL'			=> $data_sv['iSoTCTL'],
+			'iSoTCConNo'		=> $data_sv['iSoTCConNo'],
+			'sXepLoaiTotNghiep' => $data_sv['sXepLoaiTotNghiep']
+		);
+		$this->db->update('tbl_nhaphoc', $update);
+		return $this->db->affected_rows();
+	}
 	#endregion
+
+	public function getDSSVIn($khoahoc)
+	{
+		$this->db->where('PK_iMaKhoa', $khoahoc);
+		$this->db->join('tbl_sinhvien','PK_iMaSV = FK_iMaSV', 'inner');
+		$this->db->join('tbl_sinhvien_lop','PK_iMaNhapHoc = FK_iMaNhapHoc', 'inner');
+		$this->db->join('tbl_lop_hanh_chinh','PK_iMaLop = FK_iMaLop', 'inner');
+		$this->db->join('tbl_khoa','PK_iMaKhoa = tbl_nhaphoc.FK_iMaKhoa', 'inner');
+		$this->db->join('tbl_donvi_ctdt','PK_iMaDVCTDT = FK_iMaDVCTDT', 'inner');
+		$this->db->join('tbl_donvi','PK_iMaDonVi = FK_iMaDonVi', 'inner');
+		$this->db->join('tbl_ctdt','PK_iMaCTDT = FK_iMaCTDT', 'inner');
+		$this->db->join('tbl_nganh','PK_iMaNganh = FK_iMaNganh', 'inner');
+		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
+		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
+		$res = $this->db->get('tbl_nhaphoc')->result_array();
+		foreach ($res as $key => $value) {
+			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
+			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
+			$this->db->order_by('iSTT','asc');
+			$res[$key]['diem'] = $this->db->get('tbl_diem')->result_array();
+		}
+		return $res;
+	}
 }

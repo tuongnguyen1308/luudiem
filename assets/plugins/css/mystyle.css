@@ -8,7 +8,7 @@
 body{
 	font-family: DejaVu Sans;
 	/*font-family: "Arial";"Times New Roman";*/
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 1.5;
 }
 h1,
@@ -23,7 +23,7 @@ h1 {
 	font-size: 30px;
 }
 h2 {
-	font-size: 24px;
+	font-size: 22px;
 }
 h3 {
 	font-size: 16px;
@@ -787,7 +787,7 @@ video {
 .table > tfoot > tr > td {
 	/*border-top: 1px solid #e7eaec;*/
 	line-height: 1.42857;
-	padding: 8px;
+	padding: 0px;
 	vertical-align: top;
 }
 
