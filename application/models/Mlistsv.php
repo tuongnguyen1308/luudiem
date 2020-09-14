@@ -28,21 +28,30 @@ class Mlistsv extends MY_Model
 		return $res;
 	}
 	
-	public function getListKhoa()
+	public function getList($table_name)
 	{
-		return $this->db->get('tbl_khoa')->result_array();
+		return $this->db->get($table_name)->result_array();
 	}
 	
-	public function getSVGrade($masv)
+	public function getNamHoc($conditional)
 	{
-		$this->db->where('FK_iMaNhapHoc', $masv);
-		$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
-		$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
-		$this->db->order_by('iSTT', 'asc');
-		return $this->db->get('tbl_diem')->result_array();
-		// $this->db->where('FK_iMaTK', $masv);
-		// $res = $this->db->get('tbl_diem')->result_array();
-		// return $res;
+		$this->db->where($conditional);
+		$this->db->order_by('sNam', 'asc');
+		return $this->db->get('tbl_ctdt')->result_array();
+	}
+	public function getDonVi($conditional)
+	{
+		$this->db->where($conditional);
+		$this->db->join('tbl_ctdt','PK_iMaCTDT = FK_iMaCTDT', 'inner');
+		$this->db->join('tbl_donvi','PK_iMaDonVi = FK_iMaDonVi', 'inner');
+		$this->db->order_by('sTenDonVi', 'asc');
+		return $this->db->get('tbl_donvi_ctdt')->result_array();
+	}
+	public function getKhoaHoc($conditional)
+	{
+		$this->db->where($conditional);
+		$this->db->order_by('iKhoa', 'desc');
+		return $this->db->get('tbl_khoa')->result_array();
 	}
 	public function delSV($masv)
 	{
@@ -380,7 +389,9 @@ class Mlistsv extends MY_Model
 			'sTBCTL'			=> $data_sv['sTBCTL'],
 			'iSoTCTL'			=> $data_sv['iSoTCTL'],
 			'iSoTCConNo'		=> $data_sv['iSoTCConNo'],
-			'sXepLoaiTotNghiep' => $data_sv['sXepLoaiTotNghiep']
+			'sXepLoaiTotNghiep' => $data_sv['sXepLoaiTotNghiep'],
+			'sSoQuyetDinh'		=> $data_sv['sSoQuyetDinh'],
+			'dNgayQuyetDinh'	=> $data_sv['dNgayQuyetDinh']
 		);
 		$this->db->update('tbl_nhaphoc', $update);
 		return $this->db->affected_rows();

@@ -7,38 +7,67 @@
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
-                    <div class="text-uppercase mt-2">Danh sách sinh viên</div>
+                    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group mb-0 text-right" id="customFile" lang="vi">
+                            <span class="float-left text-uppercase mt-2">Danh sách sinh viên</span>
+                            <div class="float-right">
+                                <span>Thêm file Excel: </span>
+                                <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
+                                <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Nhập file Excel</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                    </form>
                 </div>
-
                 <div class="card-body">
                     <div class="row mb-3">
-                        <div class="col-6">
+                        <div class="col-12">
+                            <div class="mb-2">Xuất file Excel: </div>
                             <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                                <div class="form-group mb-0" id="customFile" lang="vi">
-                                    <div class="">
-                                        <span>Thêm file Excel: </span>
-                                        <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
-                                        <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Nhập file Excel</button>
-                                    </div>
-                                </div>
-                                <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-                            </form>
-                        </div>
-                        <div class="col-6">
-                            <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
-                                <div class="float-right form-inline">
-                                    <span>Chọn Khoá để xuất: </span>
-                                    <select name="iKhoa" class="form-control mr-3">
-                                        {foreach $listKhoa as $k => $v}
-                                            <option value="{$v.PK_iMaKhoa}">{$v.iKhoa}</option>
+                                <div class="form-inline mb-3">
+                                    <span>Chọn Bậc: </span>
+                                    <select name="bac" id="bac" class="form-control mr-3" required>
+                                        <option value="">--Chọn Bậc--</option>
+                                        {foreach $listBac as $k => $v}
+                                            <option value="{$v.PK_iMaBac}">{$v.sTenBac}</option>
                                         {/foreach}
                                     </select>
+                                    <span>Chọn Hệ: </span>
+                                    <select name="he" id="he" class="form-control mr-3" required>
+                                        <option value="">--Chọn Hệ--</option>
+                                        {foreach $listHe as $k => $v}
+                                            <option value="{$v.PK_iMaHe}">{$v.sTenHe}</option>
+                                        {/foreach}
+                                    </select>
+                                    <span>Chọn Ngành: </span>
+                                    <select name="nganh" id="nganh" class="form-control mr-3" required>
+                                        <option value="">--Chọn Ngành--</option>
+                                        {foreach $listNganh as $k => $v}
+                                            <option value="{$v.PK_iMaNganh}">{$v.sTenNganh}</option>
+                                        {/foreach}
+                                    </select>
+                                    <span>Chọn Năm học: </span>
+                                    <select name="namhoc" id="namhoc" class="form-control mr-3" required>
+                                        <option value="">--Chọn Năm học--</option>
+                                        <!-- ajax -->
+                                    </select>
+                                </div>
+                                <div class="form-inline">
+                                    <span>Chọn Khoa: </span>
+                                    <select name="donvi" id="donvi" class="form-control mr-3" required>
+                                        <option value="">--Chọn Khoa--</option>
+                                    </select>
+                                    <span>Chọn Khoá học: </span>
+                                    <select name="khoahoc" id="khoahoc" class="form-control mr-3" required>
+                                        <option value="">--Chọn Khoá học--</option>
+                                    </select>
                                     <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-                                    <button name="export" value="1" class="float-right btn btn-sm btn-success" type="submit">Xuất file Excel</button>
+                                    <button name="export" value="1" class="btn btn-sm btn-success" type="submit">Xuất file Excel</button>
                                 </div>
                             </form>
                         </div>
                     </div>
+					<div class="mb-2">Danh sách sinh viên: </div>
                     <table id="tbl" class="table table-striped table-inverse table-bordered">
                         <thead>
                             <tr>
@@ -69,6 +98,11 @@
                                     </td> -->
                                     <td class="text-center">
 										<form action="" method="post">
+                                            <a target="_blank" href="{$url}inbangdiem?masv={$value.PK_iMaNhapHoc}&d_f_w=true">
+                                                <button class="btn btn-success btn-sm" type="button">
+                                                    <i class="fa fa-download" aria-hidden="true" title="Tải file word"></i>
+                                                </button>
+                                            </a>
                                             <a target="_blank" href="{$url}inbangdiem?masv={$value.PK_iMaNhapHoc}">
                                                 <button class="btn btn-success btn-sm" type="button">
                                                     <i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
@@ -81,9 +115,9 @@
 												<i class="fa fa-pencil" aria-hidden="true" title="Sửa"></i>
 											</button> -->
 											<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-											<button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaSV}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+											<!-- <button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaSV}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
 												<i class="fa fa-trash" aria-hidden="true" title="Xoá"></i>
-											</button>
+											</button> -->
 										</form>
                                         <!-- <a href="{$url}info-ung-vien?id={$value.PK_iMaSV}" target="_blank" class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i> Sửa</a> -->
                                     </td>
@@ -325,10 +359,108 @@
         $('.feature').each(function (k, v){
             $(v).css("background-color", getRandomColor());
         });
-    });
+	});
+	
+	var maBac	= '';
+	var maHe	= '';
+	var maNganh	= '';
+	var namHoc	= '';
+	var maDonvi	= '';
+	var maKhoa	= '';
+
     $(document).ready(() => {
         var url = window.location.href;
-        $('#tbl').DataTable();
+		// $('#tbl').DataTable();
+		
+
+        $("#bac").click(function(){
+			maBac = $(this).val();
+			postAjax();
+        });
+        $("#he").click(function(){
+			maHe = $(this).val();
+			postAjax();
+        });
+        $("#nganh").click(function(){
+			maNganh = $(this).val();
+			postAjax();
+        });
+
+		function postAjax() {
+			if(maBac != '' && maHe != '' && maNganh != '') {
+				// console.log(maBac + ' ' + maHe + ' ' + maNganh);
+				$.post(
+					"",
+					{
+						action:			'getNamHoc',
+						FK_iMaBac:		maBac,
+						FK_iMaHe:		maHe,
+						FK_iMaNganh:	maNganh,
+					},
+					function(res){
+						// console.log(res);
+						res.forEach(namhoc => {
+							let option = '<option value=' + namhoc['sNam'] + '>';
+							option += namhoc['sNam'];
+							option += '</option>';
+							$('#namhoc').append(option);
+						});
+				}, 'json');
+			}
+			else {
+				$('#namhoc').html('<option>--Chọn Năm học--</option>');
+			}
+		}
+
+        $("#namhoc").click(function(){
+			namHoc = $(this).val();
+			if(namHoc != '') {
+				$.post(
+					"",
+					{
+						action:			'getDonVi',
+						FK_iMaBac:		maBac,
+						FK_iMaHe:		maHe,
+						FK_iMaNganh:	maNganh,
+						sNam:			namHoc
+					},
+					function(res){
+						// console.log(res);
+						res.forEach(khoa => {
+							let option = '<option value=' + khoa['PK_iMaDVCTDT'] + '>';
+							option += khoa['sTenDonVi'];
+							option += '</option>';
+							$('#donvi').append(option);
+						});
+				}, 'json');
+			}
+			else {
+				$('#donvi').html('<option>--Chọn Đơn vị--</option>');
+			}
+        });
+        $("#donvi").click(function(){
+			maDonVi = $(this).val();
+			if(maDonVi != '') {
+				$.post(
+					"",
+					{
+						action:			'getKhoaHoc',
+						FK_iMaDVCTDT:	maDonVi
+					},
+					function(res){
+						// console.log(res);
+						res.forEach(khoahoc => {
+							let option = '<option value=' + khoahoc['PK_iMaKhoa'] + '>';
+							option += khoahoc['iKhoa'];
+							option += '</option>';
+							$('#khoahoc').append(option);
+						});
+				}, 'json');
+			}
+			else {
+				$('#khoahoc').html('<option>--Chọn Khoá học--</option>');
+			}
+        });
 
 
 

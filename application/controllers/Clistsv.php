@@ -26,20 +26,32 @@ class Clistsv extends MY_Controller
 		else if ($this->input->post('delSV')) {
             $this->delSV();
 		}
-		else if ($this->input->post('action') == 'getSVGrade') {
-			$this->getSVGrade();
-		}
 		else if ($this->input->post('download_demo')) {
 			$this->download_demo();
 		}
 		else if ($this->input->post('export')) {
 			$this->getDataToExport();
 		}
+		else switch ($this->input->post('action')) {
+			case 'getNamHoc':
+				$this->getNamHoc();
+				break;
+			
+			case 'getDonVi':
+				$this->getDonVi();
+				break;
+			
+			case 'getKhoaHoc':
+				$this->getKhoaHoc();
+				break;
+		}
         $session = $this->session->userdata('user');
         $data = array(
             'currentpage'   => 'list',
 			'DSSV'          => $this->Mlistsv->getDSSV('all'),
-			'listKhoa'		=> $this->Mlistsv->getListKhoa() //khoá học
+			'listBac'		=> $this->Mlistsv->getList('tbl_bac'),
+			'listHe'		=> $this->Mlistsv->getList('tbl_He'),
+			'listNganh'		=> $this->Mlistsv->getList('tbl_nganh'),
         );  
         //pr($data['DSSV']);
         $temp['data'] = $data;
@@ -47,10 +59,35 @@ class Clistsv extends MY_Controller
         $this->load->view('layouts/Vlayout', $temp);
     }
 
-	public function getSVGrade()
+	public function getNamHoc()
 	{
-		$masv = $this->input->post('masv');
-		$db = $this->Mlistsv->getSVGrade($masv);
+		$fk_arr = array(
+			'FK_iMaBac'		=> $this->input->post('FK_iMaBac'),
+			'FK_iMaHe'		=> $this->input->post('FK_iMaHe'),
+			'FK_iMaNganh'	=> $this->input->post('FK_iMaNganh')
+		);
+		$db = $this->Mlistsv->getNamHoc($fk_arr);
+		exit(json_encode($db));
+	}
+	public function getDonVi()
+	{
+		$conditional = array(
+			'FK_iMaBac'		=> $this->input->post('FK_iMaBac'),
+			'FK_iMaHe'		=> $this->input->post('FK_iMaHe'),
+			'FK_iMaNganh'	=> $this->input->post('FK_iMaNganh'),
+			'sNam'			=> $this->input->post('sNam')
+		);
+		// pr($conditional);
+		$db = $this->Mlistsv->getDonVi($conditional);
+		exit(json_encode($db));
+	}
+	public function getKhoaHoc()
+	{
+		$conditional = array(
+			'FK_iMaDVCTDT'		=> $this->input->post('FK_iMaDVCTDT')
+		);
+		// pr($conditional);
+		$db = $this->Mlistsv->getKhoaHoc($conditional);
 		exit(json_encode($db));
 	}
     
@@ -84,18 +121,11 @@ class Clistsv extends MY_Controller
 
 				$sttmon = array();
 				#region import_mon
-				for ($column = 7, $i = 1; $column < $lastColumn - 5;) {
+				for ($column = 7, $i = 1; $column < $lastColumn - 10; $column += 3) {
 					$mon = array(
 						'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
-						'iSoTinChi'	=> 0
+						'iSoTinChi'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue()
 					);
-					if ($column < $lastColumn - 8) {
-						$mon['iSoTinChi'] = $worksheet->getCellByColumnAndRow($column, 8)->getValue();
-						$column += 3;
-					}
-					else {
-						$column++;
-					}
 					
 					array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i++));
 
@@ -125,10 +155,10 @@ class Clistsv extends MY_Controller
 					$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
 					
 
-					$attr = array('sGDTC', 'sGDQP', 'sCDRNN', 'sXLRenLuyen', 'sTBCTL', 'iSoTCTL', 'iSoTCConNo', 'sXepLoaiTotNghiep');
+					$attr = array('sGDTC', 'sGDQP', 'sCDRNN', 'sXLRenLuyen', 'sTBCTL', 'iSoTCTL', 'iSoTCConNo', 'sXepLoaiTotNghiep', 'sSoQuyetDinh', 'dNgayQuyetDinh');
 
 					for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn;) {
-						if ($column < $lastColumn - 8) {
+						if ($column < $lastColumn - 10) {
 							$diem = array(
 								'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
 								'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
@@ -139,7 +169,13 @@ class Clistsv extends MY_Controller
 							$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
 						}
 						else {
-							$data_sv[$attr[$count_attr++]] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+							if($column == $lastColumn - 1) {
+								$data_sv[$attr[$count_attr++]] = implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($column++, $row)->getValue())));
+							}
+							else {
+								$data_sv[$attr[$count_attr++]] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+							}
+							
 
 						}
 
@@ -210,8 +246,8 @@ class Clistsv extends MY_Controller
 	public function getDataToExport()
 	{
 		$session = $this->session->userdata('user');
-		$khoahoc = $this->input->post('iKhoa');
-		$sv = $this->Mlistsv->getDSSVIn($khoahoc);
+		$maKhoaHoc = $this->input->post('khoahoc');
+		$sv = $this->Mlistsv->getDSSVIn($maKhoaHoc);
 		// pr($sv);
 
 		$object = new PHPExcel();
@@ -280,7 +316,7 @@ class Clistsv extends MY_Controller
 		}
 		$to_col = $from_col;
 		$to_row = 9;
-		$list_last_col = array('GDTC','GDQP','CĐRNN','XL Rèn Luyện','TBC TL','Số TC TL','Số TC còn nợ','Xếp loại tốt nghiệp');
+		$list_last_col = array('GDTC', 'GDQP', 'CĐRNN', 'XL Rèn Luyện', 'TBC TL', 'Số TC TL', 'Số TC còn nợ', 'Xếp loại tốt nghiệp', 'Số quyết định', 'Ngày quyết định');
 		foreach($list_last_col as $field)
 		{
 			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
@@ -313,6 +349,8 @@ class Clistsv extends MY_Controller
 			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCTL']);
 			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCConNo']);
 			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sXepLoaiTotNghiep']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sSoQuyetDinh']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgayQuyetDinh'])));
 			$row++;
 			$column = 0;
 		}
@@ -354,6 +392,7 @@ class Clistsv extends MY_Controller
 		// pr($lastCol);
 		$lastCol = $object->getActiveSheet()->getHighestColumn();
 		$object->getActiveSheet()->getStyle('A7:'.$lastCol.--$row)->applyFromArray($styleArray);
+		$object->getActiveSheet()->getStyle('A7:'.$lastCol.$row)->getAlignment()->setWrapText(true);
 		$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="Danh sách sinh viên.xls"');
