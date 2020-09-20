@@ -12,6 +12,27 @@
 <!-- <body {if $print}onload="window.print();"{/if}> -->
 
     <style>
+        @page Section1 {
+            size:8.27in 11.69in !important; 
+            margin: .6in .3in .6in .3in !important;
+            /* mso-header-margin:.5in;
+            mso-footer-margin:.5in; */
+            mso-paper-source:0;
+        }
+        div.Section1 {
+            page:Section1;
+        }
+        /* @page Section2 {
+            size:841.7pt 595.45pt;
+            mso-page-orientation:landscape;
+            margin: 0.99in 0.39in 0.59in 0.39in;
+            mso-header-margin:.5in;
+            mso-footer-margin:.5in;
+            mso-paper-source:0;
+        }
+        div.Section2 {
+            page:Section2;
+        } */
         *{
         padding: 0;
         margin: 0;
@@ -20,10 +41,10 @@
         .container {
             margin-right: auto;
             margin-left: auto;
-            width: 890px;
         }
         .text-left {
             text-align: left;
+            padding-left: 2px !important;
         }
         .text-center {
             text-align: center;
@@ -51,35 +72,56 @@
             vertical-align: middle !important;
         }
         {if $print}
+            .Section1 {
+                width: 8.27in;
+                margin-left: auto;
+                margin-right: auto;
+                /* padding: .6in .4in .6in .4in !important; */
+            }
             .table td {
                 padding: 2px !important;
             }
-            * {
-                font-size: 16px;
+            .text8 {
+                font-size: 8pt;
             }
-            .text16 {
-                font-size: 22px;
+            .text8-5 {
+                font-size: 8.5pt;
             }
-        {else}
             .text12 {
-                font-size: 9pt;
+                font-size: 12pt;
             }
-            .text13 {
-                font-size: 10pt;
-            }
-            .text16 {
+            .text14 {
                 font-size: 14pt;
             }
             .table {
-                font-size: 9pt;
+                font-size: 10pt;
+            }
+        {else}
+            .table td {
+                padding: 1px 0px;
+            }
+            .text8 {
+                font-size: 8pt;
+            }
+            .text8-5 {
+                font-size: 8.5pt;
+            }
+            .text12 {
+                font-size: 12pt;
+            }
+            .text14 {
+                font-size: 14pt;
+            }
+            .table {
+                font-size: 10pt;
             }
         {/if}
     </style>
-	<div class="container">
+	<div class="Section1">
         <table width="100%">
             <tbody>
                 <tr class="text12">
-                    <td width="50%"><strong>BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong></td>
+                    <td width="50%">BỘ GIÁO DỤC VÀ ĐÀO TẠO</td>
                     <td width="50%"><strong>CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong></td>
                 </tr>
                 <tr class="text12">
@@ -91,24 +133,24 @@
                     <td><strong>----------------------------</strong></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><h2><strong class="text16">PHỤ LỤC VĂN BẰNG (Bản sao)</strong></h2></td>
+                    <td colspan="2"><h2><strong class="text14">PHỤ LỤC VĂN BẰNG (Bản sao)</strong></h2></td>
                 </tr>
-                <tr class="text13">
-                    <td colspan="2"><i>(Theo Quyết định công nhận tốt nghiệp số: {$sv.sSoQuyetDinh} ngày {date("d/m/Y", strtotime($sv.dNgayQuyetDinh))})</i></td>
+                <tr class="text12">
+                    <td colspan="2"><i>(Theo Quyết định công nhận tốt nghiệp số: {$sv.sSoQuyetDinhTotNghiep} ngày {date("d/m/Y", strtotime($sv.dNgayQuyetDinhTotNghiep))})</i></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td class="text-left">Họ và tên: <strong>{$sv.sHo} {$sv.sTen}</strong></td>
                     <td class="text-left">Ngành học: <strong>{$sv.sTenNganh}</strong></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td class="text-left">Ngày sinh: <strong>{date("d/m/Y", strtotime($sv.dNgaySinh))}</strong></td>
                     <td class="text-left">Bậc học: <strong>{$sv.sTenBac}</strong></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td class="text-left">Giới tính: <strong>{$sv.sGioiTinh}</strong></td>
                     <td class="text-left">Hệ: <strong>{$sv.sTenHe}</strong></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td class="text-left">Khoa: <strong>{$sv.sTenDonVi}</strong></td>
                     <td class="text-left">Khoá học: <strong>{$sv.iKhoa}</strong></td>
                 </tr>
@@ -116,16 +158,16 @@
                     <td>
                         <table class="table" border="1">
                             <thead>
-                                <tr>
+                                <tr class="text8-5">
                                     <th rowspan="2">STT</th>
                                     <th rowspan="2" width="100%">MÔN HỌC</th>
-                                    <th rowspan="2">Số TC</th>
+                                    <th rowspan="2">SỐ TÍN CHỈ</th>
                                     <th rowspan="1" colspan="3">ĐIỂM</th>
                                 </tr>
-                                <tr>
-                                    <th width="5%">ĐT 10</th>
-                                    <th width="5%">ĐT chữ</th>
-                                    <th width="5%">ĐT 4</th>
+                                <tr class="text8">
+                                    <th width="5%">Thang 10</th>
+                                    <th width="5%">Thang chữ</th>
+                                    <th width="5%">Thang 4</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody1">
@@ -135,14 +177,14 @@
                                         <td>{$k+1}</td>
                                         <td class="text-left" style="padding-left:2px !important;">{$v.sTenMon}</td>
                                         <td>{$v.iSoTinChi}</td>
-                                        <td>{$v.iDT10}</td>
-                                        <td>{$v.sDTChu}</td>
-                                        <td>{$v.iDT4}</td>
+                                        <td><strong>{$v.iDT10}</strong></td>
+                                        <td><strong>{$v.sDTChu}</strong></td>
+                                        <td><strong>{$v.iDT4}</strong></td>
                                     </tr>
                                     {/if}
                                 {/foreach}
                                     <tr>
-                                        <td colspan="6">Số Tín chỉ tích lũy: {$sv.iSoTCTL} - Điểm TBCTL toàn khóa học: {$sv.sTBCTL}</td>
+                                        <td colspan="6"><strong>Số Tín chỉ tích lũy: {$sv.iSoTCTL} - Điểm TBCTL toàn khóa học: {$sv.sTBCTL}</strong></td>
                                     </tr>
                             </tbody>
                         </table>
@@ -150,16 +192,16 @@
                     <td>
                         <table class="table" border="1">
                             <thead>
-                                <tr>
+                                <tr class="text8-5">
                                     <th rowspan="2">STT</th>
                                     <th rowspan="2" width="100%">MÔN HỌC</th>
-                                    <th rowspan="2">Số TC</th>
+                                    <th rowspan="2">SỐ TÍN CHỈ</th>
                                     <th rowspan="1" colspan="3">ĐIỂM</th>
                                 </tr>
-                                <tr>
-                                    <th width="5%">ĐT 10</th>
-                                    <th width="5%">ĐT chữ</th>
-                                    <th width="5%">ĐT 4</th>
+                                <tr class="text8">
+                                    <th width="5%">Thang 10</th>
+                                    <th width="5%">Thang chữ</th>
+                                    <th width="5%">Thang 4</th>
                                 </tr>
                             </thead>
                             <tbody id="tbody2">
@@ -170,9 +212,9 @@
                                         <td>{$k+1}</td>
                                         <td class="text-left" style="padding-left:2px !important;">{$v.sTenMon}</td>
                                         <td>{$v.iSoTinChi}</td>
-                                        <td>{$v.iDT10}</td>
-                                        <td>{$v.sDTChu}</td>
-                                        <td>{$v.iDT4}</td>
+                                        <td><strong>{$v.iDT10}</strong></td>
+                                        <td><strong>{$v.sDTChu}</strong></td>
+                                        <td><strong>{$v.iDT4}</strong></td>
                                     </tr>
                                     {/if}
                                     {$i = $k}
@@ -198,25 +240,25 @@
                                     <td colspan="4">{$sv.sXLRenLuyen}</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="6">Xếp loại tốt nghiệp: {$sv.sXepLoaiTotNghiep}</td>
+                                    <td colspan="6"><strong>Xếp loại tốt nghiệp: {$sv.sXepLoaiTotNghiep}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
                     </td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td></td>
                     <td><i>Hà Nội, ngày ... tháng ... năm ...</i></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td></td>
                     <td><strong>TL. HIỆU TRƯỞNG</strong></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td></td>
                     <td><strong>KT. TRƯỞNG PHÒNG</strong></td>
                 </tr>
-                <tr class="text13">
+                <tr class="text12">
                     <td><strong>Người lập biểu</strong></td>
                     <td><strong>PTP PHỤ TRÁCH PHÒNG QL ĐÀO TẠO</strong></td>
                 </tr>

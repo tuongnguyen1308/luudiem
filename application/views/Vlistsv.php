@@ -1,7 +1,7 @@
 <div class="wrapper wrapper-content animated fadeInRight">
     <form action="" method="post">
         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-        <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;" disabled>Yêu cầu: Điền đầy đủ các giá trị trong file excel! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
+        <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;font-family:'arial' !important;" disabled>Yêu cầu: Điền đầy đủ các giá trị trong file excel! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
     </form>
     <div class="row">
         <div class="col-lg-12">
@@ -77,7 +77,7 @@
                                 <th class="text-center" width="15%">Mã SV</th>
                                 <th class="text-center">Họ và Tên</th>
                                 <th class="text-center">Ngày sinh</th>
-                                <th width="8%" class="text-center">Giới</th>
+                                <th class="text-center">Giới</th>
                                 <!-- <th class="text-center" width="11%">In mẫu</th> -->
                                 <th class="text-center">Tác vụ</th>
                             </tr>
@@ -115,9 +115,9 @@
 												<i class="fa fa-pencil" aria-hidden="true" title="Sửa"></i>
 											</button> -->
 											<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-											<!-- <button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaSV}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
+											<button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaNhapHoc}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
 												<i class="fa fa-trash" aria-hidden="true" title="Xoá"></i>
-											</button> -->
+											</button>
 										</form>
                                         <!-- <a href="{$url}info-ung-vien?id={$value.PK_iMaSV}" target="_blank" class="btn btn-primary"><i class="fa fa-pencil" aria-hidden="true"></i> Sửa</a> -->
                                     </td>

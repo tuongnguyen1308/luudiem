@@ -55,11 +55,14 @@ class Mlistsv extends MY_Model
 	}
 	public function delSV($masv)
 	{
-		$this->db->where('FK_iMaSV', $masv);
+		$this->db->where('FK_iMaNhapHoc', $masv);
 		$this->db->delete('tbl_diem');
 		$res += $this->db->affected_rows();
-		$this->db->where('PK_iMaSV', $masv);
-		$this->db->delete('tbl_sinhvien');
+		$this->db->where('FK_iMaNhapHoc', $masv);
+		$this->db->delete('tbl_sinhvien_lop');
+		$res += $this->db->affected_rows();
+		$this->db->where('PK_iMaNhapHoc', $masv);
+		$this->db->delete('tbl_nhaphoc');
 		$res += $this->db->affected_rows();
 		return $res;
 	}
@@ -237,14 +240,18 @@ class Mlistsv extends MY_Model
 		$duplicate = $this->db->get('tbl_mon')->row_array();
 		if (!$duplicate) {
 			$insert = array(
-				'PK_iMaMon'	=> $stt . time()%10000000 . rand(100,999),
+				'PK_iMaMon'	=> $stt . time()%1000000 . rand(1000,9999),
 				'sTenMon'	=> $mon['sTenMon'],
+				'sTenMon'	=> $mon['sTenMonTA'],
 				'iSoTinChi'	=> $mon['iSoTinChi']
 			);
 			$this->db->insert('tbl_mon', $insert);
 			return $insert['PK_iMaMon'];
 		}
 		else {
+			$this->db->where('sTenMon', $mon['sTenMon']);
+			$this->db->where('iSoTinChi', $mon['iSoTinChi']);
+			$this->db->update('tbl_mon', $mon);
 			return $duplicate['PK_iMaMon'];
 		}
 	}
@@ -260,7 +267,7 @@ class Mlistsv extends MY_Model
 
 		if (!$duplicate) {
 			$insert = array(
-				'PK_iMaMon_CTDT'	=> $mon_ctdt['iSTT'] . time()%10000000 . rand(100,999),
+				'PK_iMaMon_CTDT'	=> $mon_ctdt['iSTT'] . time()%1000000 . rand(1000,9999),
 				'iSTT'				=> $mon_ctdt['iSTT'],
 				'FK_iMaMon'			=> $mon_ctdt['FK_iMaMon'],
 				'FK_iMaCTDT'		=> $mon_ctdt['FK_iMaCTDT']
@@ -365,10 +372,13 @@ class Mlistsv extends MY_Model
 		);
 		$this->db->where($conditional);
 		$duplicate = $this->db->get('tbl_diem')->row_array();
+		// pr($duplicate);
 		if (!$duplicate) {
 			$insert = $diem;
 			$insert['PK_iMaDiem'] = time()%10000000 . rand(1000,9999);
+			// pr($insert);
 			$this->db->insert('tbl_diem', $insert);
+			// pr($this->db->affected_rows());
 			return $insert['PK_iMaDiem'];
 		}
 		else {
@@ -379,19 +389,23 @@ class Mlistsv extends MY_Model
 	}
 	public function updateSV($data_sv)
 	{
+		// pr($data_sv);
 		$this->db->where('PK_iMaNhapHoc',$data_sv['sMaSV']);
 		$update = array(
-			'PK_iMaNhapHoc'		=> $data_sv['sMaSV'],
-			'sGDTC'				=> $data_sv['sGDTC'],
-			'sGDQP'				=> $data_sv['sGDQP'],
-			'sCDRNN'			=> $data_sv['sCDRNN'],
-			'sXLRenLuyen'		=> $data_sv['sXLRenLuyen'],
-			'sTBCTL'			=> $data_sv['sTBCTL'],
-			'iSoTCTL'			=> $data_sv['iSoTCTL'],
-			'iSoTCConNo'		=> $data_sv['iSoTCConNo'],
-			'sXepLoaiTotNghiep' => $data_sv['sXepLoaiTotNghiep'],
-			'sSoQuyetDinh'		=> $data_sv['sSoQuyetDinh'],
-			'dNgayQuyetDinh'	=> $data_sv['dNgayQuyetDinh']
+			'PK_iMaNhapHoc'				=> $data_sv['sMaSV'],
+			'sGDTC'						=> $data_sv['sGDTC'],
+			'sGDQP'						=> $data_sv['sGDQP'],
+			'sCDRNN'					=> $data_sv['sCDRNN'],
+			'sXLRenLuyen'				=> $data_sv['sXLRenLuyen'],
+			'sTBCTL'					=> $data_sv['sTBCTL'],
+			'iSoTCTL'					=> $data_sv['iSoTCTL'],
+			'iSoTCConNo'				=> $data_sv['iSoTCConNo'],
+			'sXepLoaiTotNghiep' 		=> $data_sv['sXepLoaiTotNghiep'],
+			'sSoQuyetDinhDauVao'		=> $data_sv['sSoQuyetDinhDauVao'],
+			'dNgayQuyetDinhDauVao'		=> $data_sv['dNgayQuyetDinhDauVao'],
+			'sSoQuyetDinhTotNghiep'		=> $data_sv['sSoQuyetDinhTotNghiep'],
+			'dNgayQuyetDinhTotNghiep'	=> $data_sv['dNgayQuyetDinhTotNghiep'],
+			'iSoHocPhanThiLai'			=> $data_sv['iSoHocPhanThiLai']
 		);
 		$this->db->update('tbl_nhaphoc', $update);
 		return $this->db->affected_rows();

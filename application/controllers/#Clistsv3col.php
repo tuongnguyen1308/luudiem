@@ -1,7 +1,9 @@
 <?php
 /**
- * User: Nguyễn Đình Tưởng
- * 5 col
+ * Created by PhpStorm.
+ * User: Nguyễn Duy Thành
+ * Date: 04/09/2019
+ * Time: 03:18 CH
  */
 
 class Clistsv extends MY_Controller
@@ -119,7 +121,7 @@ class Clistsv extends MY_Controller
 
 				$sttmon = array();
 				#region import_mon
-				for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += 5) {
+				for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += 3) {
 					$mon = array(
 						'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
 						'sTenMonTA'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue(),
@@ -163,12 +165,9 @@ class Clistsv extends MY_Controller
 								'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
 								'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
 								'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-								'sLichSu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-								'sNoiMien'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
 								'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
 								'FK_iMaMonCTDT'	=> $sttmon[$i],
 							);
-							// pr($diem);
 							$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
 						}
 						else {
