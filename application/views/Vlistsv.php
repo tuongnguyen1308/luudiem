@@ -1,20 +1,110 @@
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content">
     <form action="" method="post">
         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
         <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;font-family:'arial' !important;" disabled>Yêu cầu: Điền đầy đủ các giá trị trong file excel! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
     </form>
     <div class="row">
+		<!-- Thêm file excel -->
+        <div class="col-lg-12 mb-2">
+            <div class="card">
+                <div class="card-header">
+                    <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+                        <div class="form-group mb-0 text-right" id="customFile" lang="vi">
+                            <span class="float-left text-uppercase mt-1">Thêm file excel</span>
+                            <div class="float-right">
+                                <input id="fileExcel" type="file" name="importExcel" multiple accept=".xlsx, .xls" required>
+								<button type="button" id="btn_preview" class="btn btn-sm btn-success mr-2">Xem trước file excel</button>
+                                <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Lưu bảng Excel vào hệ thống</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                    </form>
+                </div>
+                <div id="card-body" class="card-body d-none">
+                        <div class="float-left">
+							<div class="form-inline">
+								<div id="prv_bac" class="mr-3"></div>
+								<div id="prv_he" class="mr-3"></div>
+								<div id="prv_nganh" class="mr-3"></div>
+								<div id="prv_namhoc" class="mr-3"></div>
+								<div id="prv_khoa" class="mr-3"></div>
+								<div id="prv_khoahoc" class="mr-3"></div>
+							</div>
+                        </div>
+						<div class="float-right mb-3">
+							<button name="undo_preview_excel" id="undo_preview_excel" value="1" type="button" class="btn btn-sm btn-warning">Huỷ</button>
+						</div>
+                    <table id="excel_preview" class="table table-striped table-inverse table-bordered" style="display: block; overflow: auto; overflow-x: auto; overflow-y: auto;white-space: nowrap;">
+                    </table>
+                </div>
+            </div>
+        </div>
+
+		<!-- Xuất file excel -->
+        <div class="col-lg-12 mb-2">
+            <div class="card">
+                <div class="card-header">
+					<span class="float-left text-uppercase mt-1">Xuất file excel</span>
+                </div>
+                <div class="card-body">
+					<form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
+						<div class="form-inline mb-3">
+							<span>Chọn Bậc: </span>
+							<select name="bac" id="bac" class="form-control mr-3" required>
+								<option value="">--Chọn Bậc--</option>
+								{foreach $listBac as $k => $v}
+									<option value="{$v.PK_iMaBac}">{$v.sTenBac}</option>
+								{/foreach}
+							</select>
+							<span>Chọn Hệ: </span>
+							<select name="he" id="he" class="form-control mr-3" required>
+								<option value="">--Chọn Hệ--</option>
+								{foreach $listHe as $k => $v}
+									<option value="{$v.PK_iMaHe}">{$v.sTenHe}</option>
+								{/foreach}
+							</select>
+							<span>Chọn Ngành: </span>
+							<select name="nganh" id="nganh" class="form-control mr-3" required>
+								<option value="">--Chọn Ngành--</option>
+								{foreach $listNganh as $k => $v}
+									<option value="{$v.PK_iMaNganh}">{$v.sTenNganh}</option>
+								{/foreach}
+							</select>
+							<span>Chọn Năm học: </span>
+							<select name="namhoc" id="namhoc" class="form-control mr-3" required>
+								<option value="">--Chọn Năm học--</option>
+								<!-- ajax -->
+							</select>
+						</div>
+						<div class="form-inline">
+							<span>Chọn Khoa: </span>
+							<select name="donvi" id="donvi" class="form-control mr-3" required>
+								<option value="">--Chọn Khoa--</option>
+							</select>
+							<span>Chọn Khoá học: </span>
+							<select name="khoahoc" id="khoahoc" class="form-control mr-3" required>
+								<option value="">--Chọn Khoá học--</option>
+							</select>
+							<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+							<button name="export" value="1" class="btn btn-sm btn-success" type="submit">Xuất file Excel</button>
+						</div>
+					</form>
+
+                </div>
+            </div>
+        </div>
+
         <div class="col-lg-12">
             <div class="card">
                 <div class="card-header">
                     <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
                         <div class="form-group mb-0 text-right" id="customFile" lang="vi">
-                            <span class="float-left text-uppercase mt-2">Danh sách sinh viên</span>
-                            <div class="float-right">
+                            <span class="float-left text-uppercase">Danh sách sinh viên</span>
+                            <!-- <div class="float-right">
                                 <span>Thêm file Excel: </span>
                                 <input type="file" name="importExcel" class="" multiple accept=".xlsx, .xls" required>
                                 <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary mr-2">Nhập file Excel</button>
-                            </div>
+                            </div> -->
                         </div>
                         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
                     </form>
@@ -22,52 +112,57 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-12">
-                            <div class="mb-2">Xuất file Excel: </div>
+                            <div class="mb-2">Lọc theo chương trình đào tạo: </div>
                             <form action="" method="POST" class="form-horizontal" enctype="multipart/form-data">
                                 <div class="form-inline mb-3">
-                                    <span>Chọn Bậc: </span>
+                                    <span>Bậc: </span>
                                     <select name="bac" id="bac" class="form-control mr-3" required>
                                         <option value="">--Chọn Bậc--</option>
                                         {foreach $listBac as $k => $v}
                                             <option value="{$v.PK_iMaBac}">{$v.sTenBac}</option>
                                         {/foreach}
                                     </select>
-                                    <span>Chọn Hệ: </span>
+                                    <span>Hệ: </span>
                                     <select name="he" id="he" class="form-control mr-3" required>
                                         <option value="">--Chọn Hệ--</option>
                                         {foreach $listHe as $k => $v}
                                             <option value="{$v.PK_iMaHe}">{$v.sTenHe}</option>
                                         {/foreach}
                                     </select>
-                                    <span>Chọn Ngành: </span>
+                                    <span>Ngành: </span>
                                     <select name="nganh" id="nganh" class="form-control mr-3" required>
                                         <option value="">--Chọn Ngành--</option>
                                         {foreach $listNganh as $k => $v}
                                             <option value="{$v.PK_iMaNganh}">{$v.sTenNganh}</option>
                                         {/foreach}
                                     </select>
-                                    <span>Chọn Năm học: </span>
+                                    <span>Năm học: </span>
                                     <select name="namhoc" id="namhoc" class="form-control mr-3" required>
                                         <option value="">--Chọn Năm học--</option>
-                                        <!-- ajax -->
                                     </select>
                                 </div>
                                 <div class="form-inline">
-                                    <span>Chọn Khoa: </span>
+                                    <span>Khoa: </span>
                                     <select name="donvi" id="donvi" class="form-control mr-3" required>
                                         <option value="">--Chọn Khoa--</option>
                                     </select>
-                                    <span>Chọn Khoá học: </span>
+                                    <span>Khoá học: </span>
                                     <select name="khoahoc" id="khoahoc" class="form-control mr-3" required>
                                         <option value="">--Chọn Khoá học--</option>
                                     </select>
                                     <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-                                    <button name="export" value="1" class="btn btn-sm btn-success" type="submit">Xuất file Excel</button>
+                                    <button name="export" value="1" class="btn btn-sm btn-success" type="submit">Lọc</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-					<div class="mb-2">Danh sách sinh viên: </div>
+					<div class="mb-2 float-left">Danh sách sinh viên: </div>
+                    <div class="form-group float-right">
+						<form method="post" action="">
+							<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+							<button name="delAllSV" value="1" type="submit" class="btn btn-danger btn-sm">Xoá toàn bộ sinh viên</button>
+						</form>
+                    </div>
                     <table id="tbl" class="table table-striped table-inverse table-bordered">
                         <thead>
                             <tr>
@@ -133,6 +228,15 @@
                                 {/if}
                         </tbody>
                     </table>
+					<nav class="float-right">
+						<ul class="pagination">
+							<li class="page-item {if $present_page == 1}disabled{/if}"><a class="page-link" href="{$url}listsv?page=1">Trước</a></li>
+							{for $i=1 to $countPage}
+								<li class="page-item {if $present_page == $i}active{/if}"><a class="page-link" href="{$url}listsv?page={$i}">{$i}</a></li>
+							{/for}
+							<li class="page-item {if $present_page == $countPage}disabled{/if}"><a class="page-link" href="{$url}listsv?page={$countPage}">Sau</a></li>
+						</ul>
+					</nav>
                 </div>
             </div>
         </div>
@@ -346,151 +450,4 @@
         }
     }
 </style>
-<script type="text/javascript">
-    function getRandomColor() {
-        var letters = '0123456789ABCDEF';
-        var color = '#';
-        for (var i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-    $(document).ready(function () {
-        $('.feature').each(function (k, v){
-            $(v).css("background-color", getRandomColor());
-        });
-	});
-	
-	var maBac	= '';
-	var maHe	= '';
-	var maNganh	= '';
-	var namHoc	= '';
-	var maDonvi	= '';
-	var maKhoa	= '';
-
-    $(document).ready(() => {
-        var url = window.location.href;
-		// $('#tbl').DataTable();
-		
-
-        $("#bac").click(function(){
-			maBac = $(this).val();
-			postAjax();
-        });
-        $("#he").click(function(){
-			maHe = $(this).val();
-			postAjax();
-        });
-        $("#nganh").click(function(){
-			maNganh = $(this).val();
-			postAjax();
-        });
-
-		function postAjax() {
-			if(maBac != '' && maHe != '' && maNganh != '') {
-				// console.log(maBac + ' ' + maHe + ' ' + maNganh);
-				$.post(
-					"",
-					{
-						action:			'getNamHoc',
-						FK_iMaBac:		maBac,
-						FK_iMaHe:		maHe,
-						FK_iMaNganh:	maNganh,
-					},
-					function(res){
-						// console.log(res);
-						res.forEach(namhoc => {
-							let option = '<option value=' + namhoc['sNam'] + '>';
-							option += namhoc['sNam'];
-							option += '</option>';
-							$('#namhoc').append(option);
-						});
-				}, 'json');
-			}
-			else {
-				$('#namhoc').html('<option>--Chọn Năm học--</option>');
-			}
-		}
-
-        $("#namhoc").click(function(){
-			namHoc = $(this).val();
-			if(namHoc != '') {
-				$.post(
-					"",
-					{
-						action:			'getDonVi',
-						FK_iMaBac:		maBac,
-						FK_iMaHe:		maHe,
-						FK_iMaNganh:	maNganh,
-						sNam:			namHoc
-					},
-					function(res){
-						// console.log(res);
-						res.forEach(khoa => {
-							let option = '<option value=' + khoa['PK_iMaDVCTDT'] + '>';
-							option += khoa['sTenDonVi'];
-							option += '</option>';
-							$('#donvi').append(option);
-						});
-				}, 'json');
-			}
-			else {
-				$('#donvi').html('<option>--Chọn Đơn vị--</option>');
-			}
-        });
-        $("#donvi").click(function(){
-			maDonVi = $(this).val();
-			if(maDonVi != '') {
-				$.post(
-					"",
-					{
-						action:			'getKhoaHoc',
-						FK_iMaDVCTDT:	maDonVi
-					},
-					function(res){
-						// console.log(res);
-						res.forEach(khoahoc => {
-							let option = '<option value=' + khoahoc['PK_iMaKhoa'] + '>';
-							option += khoahoc['iKhoa'];
-							option += '</option>';
-							$('#khoahoc').append(option);
-						});
-				}, 'json');
-			}
-			else {
-				$('#khoahoc').html('<option>--Chọn Khoá học--</option>');
-			}
-        });
-
-
-
-		// $(".btnView").click(function(){
-		// 	$.post(
-		// 		"",
-		// 		{
-		// 			action: 'getSVGrade',
-		// 			masv: $(this).data('ma')
-		// 		},
-		// 		function(res){
-        //             console.log(res.length);
-        //             let i = 0;
-        //             $('#list_grade').html('');
-        //             $('#list_grade2').html('');
-		// 			res.forEach(mon => {
-        //                 let list_grade = '<tr>';
-        //                 list_grade += '<td>' + mon['sTenMon'] + '</td>';
-        //                 list_grade += '<td>' + mon['iDT10'] + '</td>';
-        //                 list_grade += '<td>' + mon['sDTChu'] + '</td>';
-        //                 list_grade += '<td>' + mon['iDT4'] + '</td>';
-        //                 list_grade += '</tr>';
-        //                 if (i++ < res.length / 2) {
-        //                     $('#list_grade').append(list_grade);
-        //                 }
-        //                 else {
-        //                     $('#list_grade2').append(list_grade);
-        //                 }
-		// 			});
-		// 	}, 'json');
-		// });
-    })
-</script>
+<script src="{$url}assets/plugins/js/vlistsv.js"></script>

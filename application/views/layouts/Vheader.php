@@ -20,10 +20,12 @@
 	<link href="{$url}assets/plugins/css/animate.css" rel="stylesheet">
 	<link href="{$url}assets/plugins/css/style.css" rel="stylesheet">
 	<link href="{$url}assets/plugins/css/custom_style.css" rel="stylesheet">
-    <script src="assets/plugins/js/jquery-3.1.1.min.js"></script>
-		<!-- <script src="assets/plugins/js/jquery-2.1.1.js"></script> -->
-    <script src="assets/plugins/js/bootstrap.min.js"></script>
-    <script src="assets/plugins/js/plugins/validate/jquery.validate.min.js"></script>
+    <script src="{$url}assets/plugins/js/jquery-3.1.1.min.js"></script>
+    <script src="{$url}assets/plugins/js/xlsx.full.min.js"></script>
+    <script src="{$url}assets/plugins/js/jszip.js"></script>
+		<!-- <script src="{$url}assets/plugins/js/jquery-2.1.1.js"></script> -->
+    <script src="{$url}assets/plugins/js/bootstrap.min.js"></script>
+    <script src="{$url}assets/plugins/js/plugins/validate/jquery.validate.min.js"></script>
 	
     <script type="text/javascript">
         var tokenName = '{$csrf["name"]}';

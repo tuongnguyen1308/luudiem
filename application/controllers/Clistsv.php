@@ -18,11 +18,19 @@ class Clistsv extends MY_Controller
     
     public function index()
     {
+		$present_page = 1;
+		$per_page = 10;
+		if ($this->input->get('page')) {
+			$present_page = $this->input->get('page');
+		}
         if ($this->input->post('submitImport')) {
             $this->importSV();
 		}
 		else if ($this->input->post('delSV')) {
             $this->delSV();
+		}
+		else if ($this->input->post('delAllSV')) {
+            $this->delAllSV();
 		}
 		else if ($this->input->post('download_demo')) {
 			$this->download_demo();
@@ -45,12 +53,15 @@ class Clistsv extends MY_Controller
 		}
         $session = $this->session->userdata('user');
         $data = array(
-            'currentpage'   => 'list',
-			'DSSV'          => $this->Mlistsv->getDSSV('all'),
+			'currentpage'	=> 'list',
+			'present_page'	=> $present_page,
+			'countPage'		=> $this->Mlistsv->countPage(),
+			'DSSV'          => $this->Mlistsv->getDSSV($present_page),
 			'listBac'		=> $this->Mlistsv->getList('tbl_bac'),
 			'listHe'		=> $this->Mlistsv->getList('tbl_He'),
 			'listNganh'		=> $this->Mlistsv->getList('tbl_nganh'),
-        );  
+		);
+		// pr($data['countPage']);
         //pr($data['DSSV']);
         $temp['data'] = $data;
         $temp['template'] = 'Vlistsv';
@@ -201,6 +212,18 @@ class Clistsv extends MY_Controller
 		$masv = $this->input->post('delSV');
 		$res = $this->Mlistsv->delSV($masv);
 		if ($res > 0) {
+			setMessages('success', 'Đã xoá sinh viên');
+		}
+		redirect(base_url().'listsv');
+	}
+	public function delAllSV()
+	{
+		$res = 0;
+		$listMaSV = $this->Mlistsv->getDSSV('all');
+		foreach ($listMaSV as $key => $value) {
+			$res += $this->Mlistsv->delSV($value['PK_iMaNhapHoc']);
+		}
+		if ($res == count($listMaSV)) {
 			setMessages('success', 'Đã xoá sinh viên');
 		}
 		redirect(base_url().'listsv');

@@ -14,16 +14,24 @@ class Mlistsv extends MY_Model
 		$this->db->where('sPassword', sha1($password));
 		return $this->db->get('tbl_taikhoan')->row_array();
 	}
-	public function getDSSV($khoahoc = 'all')
-	{
-		// $this->db->where('FK_iMaTK', $MaUyVien);
-		// $this->db->join('dm_nganh','dm_nganh.PK_iMaNganh = tbl_thongtinSV.FK_iMaNganh', 'inner');
 
-		// $this->db->order_by('sLop asc, sTen asc');
+	public function countPage()
+	{
+		$data	= $this->db->get('tbl_nhaphoc')->result_array();
+		$res	= round(count($data)/10);
+		if (count($data)%10 > 0) $res++;
+		return $res;
+	}
+	public function getDSSV($present_page = 1)
+	{
+		if ($present_page != 'all') {
+			$this->db->limit(10, ($present_page-1)*10);
+		}
 		$this->db->join('tbl_sinhvien','PK_iMaSV = FK_iMaSV', 'inner');
 		$this->db->join('tbl_sinhvien_lop','PK_iMaNhapHoc = FK_iMaNhapHoc', 'inner');
 		$this->db->join('tbl_lop_hanh_chinh','PK_iMaLop = FK_iMaLop', 'inner');
 		$this->db->join('tbl_khoa','PK_iMaKhoa = tbl_nhaphoc.FK_iMaKhoa', 'inner');
+		$this->db->select('PK_iMaNhapHoc, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		return $res;
 	}
@@ -55,6 +63,7 @@ class Mlistsv extends MY_Model
 	}
 	public function delSV($masv)
 	{
+		$res = 0;
 		$this->db->where('FK_iMaNhapHoc', $masv);
 		$this->db->delete('tbl_diem');
 		$res += $this->db->affected_rows();
@@ -242,7 +251,7 @@ class Mlistsv extends MY_Model
 			$insert = array(
 				'PK_iMaMon'	=> $stt . time()%1000000 . rand(1000,9999),
 				'sTenMon'	=> $mon['sTenMon'],
-				'sTenMon'	=> $mon['sTenMonTA'],
+				'sTenMonTA'	=> $mon['sTenMonTA'],
 				'iSoTinChi'	=> $mon['iSoTinChi']
 			);
 			$this->db->insert('tbl_mon', $insert);

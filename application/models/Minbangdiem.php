@@ -27,13 +27,16 @@ class Minbangdiem extends MY_Model
 		$this->db->join('tbl_nganh','PK_iMaNganh = FK_iMaNganh', 'inner');
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
+		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->row_array();
 
 		$this->db->where('FK_iMaNhapHoc', $masv);
 		$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 		$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 		$this->db->order_by('iSTT','asc');
+		$this->db->select('sTenMon, sTenMonTA, iSoTinChi, iDT10, sDTChu, iDT4');
 		$res['diem'] = $this->db->get('tbl_diem')->result_array();
+		// pr($res);
 		return $res;
 	}
 	
