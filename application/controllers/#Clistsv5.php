@@ -1,8 +1,4 @@
 <?php
-
-ini_set('max_execution_time', 5000); 
-ini_set('memory_limit','2048M');
-ini_set('max_input_vars', 6000);
 /**
  * User: Nguyễn Đình Tưởng
  * 5 col
@@ -50,9 +46,6 @@ class Clistsv extends MY_Controller
 			
 			case 'getKhoaHoc':
 				$this->getKhoaHoc();
-				break;
-			case 'submit_import':
-				$this->importExcelAjax();
 				break;
 		}
 		
@@ -301,107 +294,6 @@ class Clistsv extends MY_Controller
 			$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
         }
 	}
-    public function importExcelAjax()
-    {
-		$list_ma_sv = array();
-        
-		$res = 0;
-		
-		#region insert_ctdt
-		$ctdt = array(
-			'sTenBac'	=> $this->input->post('bac'),
-			'sTenDonVi'	=> $this->input->post('khoa'),
-			'sNam'		=> $this->input->post('namhoc'),
-			'sTenHe'	=> $this->input->post('he'),
-			'sTenNganh'	=> $this->input->post('nganh'),
-			'iKhoa'		=> $this->input->post('khoahoc'),
-		);
-		$ctdt = $this->Mlistsv->insertCTDT($ctdt);
-		
-		#endregion
-
-		#region import_mon
-		$list_mon		= $this->input->post('list_mon');
-		$list_mon_ta	= $this->input->post('list_mon_ta');
-		$list_stc		= $this->input->post('list_stc');
-		
-		$sttmon = array();
-		for ($i = 0; $i < count($list_mon); $i++) {
-			$mon = array(
-				'sTenMon'	=> $list_mon[$i],
-				'sTenMonTA'	=> $list_mon_ta[$i],
-				'iSoTinChi'	=> $list_stc[$i]
-			);
-			
-			array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i));
-			// pr($mon);
-
-		}
-		#endregion
-
-		#region insert_sinh_vien_lop
-		
-		$list_sv = $this->input->post('list_sv');
-		
-		pr($list_sv);
-		
-		foreach ($list_sv as $key => $sv) {
-			$data_sv = array(
-				'iSTT'						=> $sv[0],
-				'sTenLop'					=> $sv[1],
-				'sMaSV'						=> $sv[2],
-				'sHo'						=> $sv[3],
-				'sTen'						=> $sv[4],
-				'dNgaySinh'					=> implode('-', array_reverse(explode('/',$sv[5]))),
-				'sGioiTinh'					=> $sv[6],
-				'sGDTC'						=> $sv[7],
-				'sGDQP'						=> $sv[8],
-				'sCDRNN'					=> $sv[9],
-				'sXLRenLuyen'				=> $sv[10],
-				'sTBCTL'					=> $sv[11],
-				'iSoTCTL'					=> $sv[12],
-				'iSoTCConNo'				=> $sv[13],
-				'sXepLoaiTotNghiep'			=> $sv[14],
-				'sSoQuyetDinhDauVao'		=> $sv[15],
-				'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$sv[16]))),
-				'sSoQuyetDinhTotNghiep'		=> $sv[17],
-				'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$sv[18]))),
-				'iSoHocPhanThiLai'			=> $sv[19]
-			);
-
-			$data_sv['FK_iMaNhapHoc'] = $this->Mlistsv->insert_sv($data_sv, $ctdt);
-			
-			$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
-			
-			$list_diem_1_sv = $sv[20];
-			for ($i = 0, $j = 0; $i < count($list_diem_1_sv);) {
-				$diem = array(
-					'iDT10'			=> $list_diem_1_sv[$i++],
-					'sDTChu'		=> $list_diem_1_sv[$i++],
-					'iDT4'			=> $list_diem_1_sv[$i++],
-					'sLichSu'		=> $list_diem_1_sv[$i++],
-					'sNoiMien'		=> $list_diem_1_sv[$i++],
-					'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
-					'FK_iMaMonCTDT'	=> $sttmon[$j],
-				);
-				// pr($diem);
-				$res = $this->Mlistsv->insertDiem($diem, $sttmon[$j++]);
-			}
-		}
-
-		#endregion
-
-		$mess = '';
-		if ($res) {
-			$mess = 'success';
-		}
-		else {
-			$mess = 'fail';
-		}
-
-		echo json_encode($mess);
-		exit();
-	}
 	
 	public function delSV()
 	{
@@ -459,6 +351,39 @@ class Clistsv extends MY_Controller
 		readfile($link);
 		exit();
 	}
+
+	// public function filter_data()
+	// {
+	// 	$bac = $this->input->post('bac');
+	// 	$he = $this->input->post('he');
+	// 	$nganh = $this->input->post('nganh');
+	// 	$namhoc = $this->input->post('namhoc');
+	// 	$donvi = $this->input->post('donvi');
+	// 	$khoahoc = $this->input->post('khoahoc');
+		
+	// 	$conditional = '';
+
+	// 	if ($bac) {
+	// 		$conditional['FK_iMaBac'] = $bac;
+	// 	}
+	// 	if ($he) {
+	// 		$conditional['FK_iMaHe'] = $he;
+	// 	}
+	// 	if ($nganh) {
+	// 		$conditional['FK_iMaNganh'] = $nganh;
+	// 	}
+	// 	if ($namhoc) {
+	// 		$conditional['sNam'] = $namhoc;
+	// 	}
+	// 	if ($donvi) {
+	// 		$conditional['FK_iMaDonVi'] = $donvi;
+	// 	}
+	// 	if ($khoahoc) {
+	// 		$conditional['PK_iMaKhoa'] = $khoahoc;
+	// 	}
+
+	// 	$list_sv = $this->Mlistsv->getDSSVIn($conditional);
+	// }
 
 	public function getDataToExport()
 	{

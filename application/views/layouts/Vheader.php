@@ -24,6 +24,7 @@
     <script src="{$url}assets/plugins/js/xlsx.full.min.js"></script>
     <script src="{$url}assets/plugins/js/jszip.js"></script>
 		<!-- <script src="{$url}assets/plugins/js/jquery-2.1.1.js"></script> -->
+    <script src="{$url}assets/plugins/js/popper.min.js"></script>
     <script src="{$url}assets/plugins/js/bootstrap.min.js"></script>
     <script src="{$url}assets/plugins/js/plugins/validate/jquery.validate.min.js"></script>
 	

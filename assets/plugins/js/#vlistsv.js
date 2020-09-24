@@ -19,20 +19,6 @@ var namHoc	= '';
 var maDonvi	= '';
 var maKhoa	= '';
 
-var bac     = '';
-var he      = '';
-var khoa    = '';
-var nganh	= '';
-var namhoc	= '';
-var khoahoc	= '';
-
-var list_mon = [];
-var list_mon_ta = [];
-var list_stc = [];
-var list_sv = [];
-var sv = [];
-var diem = [];
-
 $(document).ready(() => {
 	var url = window.location.href;
 	// $('#tbl').DataTable();
@@ -199,12 +185,12 @@ $(document).ready(() => {
 
 
 		
-		bac     = Object.values(excelRows[2])[3];
-		he      = Object.values(excelRows[2])[7];
-		khoa    = Object.values(excelRows[3])[3];
-		nganh	= Object.values(excelRows[3])[7];
-		namhoc	= Object.values(excelRows[4])[3];
-		khoahoc	= Object.values(excelRows[4])[7];
+		let bac     = Object.values(excelRows[2])[3];
+		let he      = Object.values(excelRows[2])[7];
+		let khoa    = Object.values(excelRows[3])[3];
+		let nganh	= Object.values(excelRows[3])[7];
+		let namhoc	= Object.values(excelRows[4])[3];
+		let khoahoc	= Object.values(excelRows[4])[7];
 		// console.log(ctdt);
 		
 		$('#prv_bac').html('Bậc: <b class="font-weight-bold">'+ bac + '</b>');
@@ -218,7 +204,6 @@ $(document).ready(() => {
 		//Create a HTML Table element.
 		var thead = $('<thead />');
 
-
 		//Thêm hàng đầu tiên.
 		var row = $('<tr />');
 		for (let headerRow = Object.values(excelRows[5]), i = 0, j = 0; i < headerRow.length;i = j) {
@@ -231,9 +216,6 @@ $(document).ready(() => {
 			else {
 				headerCell = $("<th class='text-center' colspan='5' />");
 				j+=5;
-
-				
-				list_mon.push(headerRow[i]);
 			}
 			headerCell.html(headerRow[i]);
 			row.append(headerCell);
@@ -242,12 +224,10 @@ $(document).ready(() => {
 		
 		//Thêm hàng môn bằng tiếng anh
 		row = $('<tr />');
-		for (let subheaderRow = Object.values(excelRows[6]), i = 7; i < subheaderRow.length - 13; i+=5) {
+		for (let list_mon_ta = Object.values(excelRows[6]), i = 7; i < list_mon_ta.length - 13; i+=5) {
 			let headerCell = $("<th class='text-center' colspan='5' />");
-			headerCell.html(subheaderRow[i]);
+			headerCell.html(list_mon_ta[i]);
 			row.append(headerCell);
-
-			list_mon_ta.push(subheaderRow[i]);
 		}
 		thead.append(row);
 
@@ -257,14 +237,8 @@ $(document).ready(() => {
 			let headerCell = $("<th class='text-center' colspan='5' />");
 			headerCell.html(stc[i]);
 			row.append(headerCell);
-			
-			list_stc.push(stc[i]);
 		}
 		thead.append(row);
-
-		// console.log(list_mon);
-		// console.log(list_mon_ta);
-		// console.log(list_stc);
 
 		//Thêm label điểm
 		row = $('<tr />');
@@ -287,11 +261,10 @@ $(document).ready(() => {
 				let cell = '';
 				if (j == 3 || j == 4) { // cột họ và tên
 					cell = $("<td class='text-left' />");
-					sv.push(dataRow[j]);
 				}
 				else if (j > 6 && j < dataRow.length - 13) { //các cột điểm
 					let valid_val = ['A', 'A+', 'B', 'B+', 'C', 'C+', 'D', 'D+', 'F', 'F+'];
-					if ((!dataRow[j].trim() || dataRow[j] == 'F') && (j-7)%5 < 3) {
+					if ((!dataRow[j].trim() || dataRow[j].trim() == 'F') && (j-7)%5 < 3) {
 						//Điểm trống hoặc = F
 						cell = $("<td class='text-center' style='background-color: #f99' title='Điểm trống' />");
 					}
@@ -307,29 +280,16 @@ $(document).ready(() => {
 						//điểm hợp lệ
 						cell = $("<td class='text-center' />");
 					}
-					diem.push(dataRow[j]);
 				}
 				else { //các cột còn lại
 					cell = $("<td class='text-center' />");
-					sv.push(dataRow[j]);
 				}
 				cell.html(dataRow[j]);
 				row.append(cell);
 			}
 			tbody.append(row);
-
-			
-			if(diem != []) {
-				sv.push(diem);
-			}
-			diem = [];
-
-			list_sv.push(sv);
-			sv = [];
 		}
 
-		console.log(list_sv);
-		// console.log(list_mon_ta);
 		$("#excel_preview").html('').append(thead).append(tbody);
 		$('#card-body').removeClass('d-none');
 	};
@@ -344,38 +304,6 @@ $(document).ready(() => {
 		$("#excel_preview").html('');
 		$('#card-body').addClass('d-none');
 		$("#fileExcel").val('');
-	});
-
-	$("#btn_submit").click(function(){
-		// console.log(bac);
-		// console.log(he);
-		// console.log(khoa);
-		// console.log(nganh);
-		// console.log(namhoc);
-		// console.log(khoahoc);
-		// console.log(list_mon);
-		// console.log(list_mon_ta);
-		// console.log(list_stc);
-		// console.log(list_sv);
-		$.post(
-			"",
-			{
-				action: 'submit_import',
-				contentType: "application/json; charset=utf-8",
-				bac     : bac,
-				he      : he,
-				khoa    : khoa,
-				nganh	: nganh,
-				namhoc	: namhoc,
-				khoahoc	: khoahoc,
-				list_mon : list_mon,
-				list_mon_ta : list_mon_ta,
-				list_stc : list_stc,
-				list_sv : list_sv
-			},
-			function(res){
-				alert(res);
-		}, 'json');
 	});
 
 
