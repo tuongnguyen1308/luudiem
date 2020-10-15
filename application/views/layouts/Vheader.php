@@ -55,6 +55,7 @@
 					</li>
                         <!-- <li class="p-3 w-100 {($currentpage=='info')?'active':''}"><a href="{$url}infouv">Thông tin cá nhân</a></li> -->
                         <li class="p-3 w-100 {($currentpage=='list')?'active':''}"><a href="{$url}listsv">Danh sách sinh viên</a></li>
+						<li class="p-3 w-100 {($currentpage=='statistical')?'active':''}"><a href="{$url}statistical">Thống kê</a></li>
 				</ul>
 			</div>
 		</nav>

@@ -328,7 +328,7 @@ $(document).ready(() => {
 			sv = [];
 		}
 
-		console.log(list_sv);
+		// console.log(list_sv);
 		// console.log(list_mon_ta);
 		$("#excel_preview").html('').append(thead).append(tbody);
 		$('#card-body').removeClass('d-none');
@@ -357,25 +357,44 @@ $(document).ready(() => {
 		// console.log(list_mon_ta);
 		// console.log(list_stc);
 		// console.log(list_sv);
+		
 		$.post(
 			"",
 			{
 				action: 'submit_import',
 				contentType: "application/json; charset=utf-8",
-				bac     : bac,
-				he      : he,
-				khoa    : khoa,
-				nganh	: nganh,
-				namhoc	: namhoc,
-				khoahoc	: khoahoc,
-				list_mon : list_mon,
-				list_mon_ta : list_mon_ta,
-				list_stc : list_stc,
-				list_sv : list_sv
+				bac			: bac,
+				he			: he,
+				khoa		: khoa,
+				nganh		: nganh,
+				namhoc		: namhoc,
+				khoahoc		: khoahoc,
+				list_mon	: list_mon,
+				list_mon_ta	: list_mon_ta,
+				list_stc	: list_stc
 			},
 			function(res){
-				alert(res);
+				// console.log(res);
+				var sum_sv = 0;
+				list_sv.forEach((sv) => {
+					$.post(
+						"",
+						{
+							action		: 'import_diem',
+							contentType	: "application/json; charset=utf-8",
+							stt_mon		: res.sttmon,
+							ctdt		: res.ctdt,
+							sv			: sv
+						},
+						function(res1){
+							sum_sv += res1;
+					}, 'json');
+				})
 		}, 'json');
+
+		$('#noty_badge').html('Đã thêm ' + list_sv.length + ' sinh viên').removeClass('d-none');
+
+		
 	});
 
 

@@ -17,6 +17,7 @@ $route['infouv']					= 'Cinfouv';
 $route['listsv']					= 'Clistsv';
 $route['listsv/:num']				= 'Clistsv/index/$1';
 $route['inbangdiem']    			= 'Cinbangdiem';
+$route['statistical']				= 'Cstatistical';
 
 
 $route['info-ung-vien']				= 'Cinfoungvien';

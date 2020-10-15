@@ -69,7 +69,7 @@ class Clistsv extends MY_Controller
 		
 		$keyword = '';
 		
-		if ($this->input->post('btn_filter') || $this->input->post('btn_search') || $this->input->post('btn_delete') || $this->input->post('btn_export_word')) {
+		if ($this->input->post('btn_filter') || $this->input->post('btn_search') || $this->input->post('btn_delete')) {
 			$bac = $this->input->post('bac');
 			$he = $this->input->post('he');
 			$nganh = $this->input->post('nganh');
@@ -125,14 +125,11 @@ class Clistsv extends MY_Controller
 		// 	$keyword = $this->input->post('inp_keyword');
 		// 	$this->session->set_flashdata('keyword', $keyword);
 		// }
+		
 		if ($this->input->post('btn_delete')) {
-			// pr($conditional);
 			$this->deleteSVWith($conditional);
 		}
-		if ($this->input->post('btn_export_word')) {
-			// pr($conditional);
-			$this->ExportListWord($conditional);
-		}
+
 		if (!$this->input->post('btn_reset_filter')) {
 			$list_sv = $this->Mlistsv->getDSSVIn($conditional, $keyword, $present_page);
 			// pr($list_sv);
@@ -194,7 +191,7 @@ class Clistsv extends MY_Controller
 	public function getKhoaHoc()
 	{
 		$conditional = array(
-			'FK_iMaDVCTDT'	=> $this->input->post('FK_iMaDVCTDT')
+			'FK_iMaDVCTDT'		=> $this->input->post('FK_iMaDVCTDT')
 		);
 		// pr($conditional);
 		$db = $this->Mlistsv->getKhoaHoc($conditional['FK_iMaDVCTDT']);
@@ -209,7 +206,9 @@ class Clistsv extends MY_Controller
 			$res = 0;
             $path = $_FILES['importExcel']['tmp_name'];
             $object = PHPExcel_IOFactory::load($path);
+			// pr($object->getWorksheetIterator());
             $worksheet = $object->getSheet(0);
+                // pr($worksheet->getHighestColumn());
 			$lastRow		= $worksheet->getHighestRow();
 			$hightestCol	= $worksheet->getHighestColumn();
 			$lastColumn		= PHPExcel_Cell::columnIndexFromString($hightestCol);
@@ -229,8 +228,7 @@ class Clistsv extends MY_Controller
 
 			$sttmon = array();
 			#region import_mon
-			$so_cot = $ctdt['sTenDonVi'] == 'Đào tạo từ xa' ? 5 : 3;
-			for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += $so_cot) {
+			for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += 5) {
 				$mon = array(
 					'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
 					'sTenMonTA'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue(),
@@ -242,6 +240,7 @@ class Clistsv extends MY_Controller
 
 			}
 			#endregion
+			// pr($sttmon);
 			#region insert_sinh_vien_lop
 			for ($row = 11; $row <= $lastRow; $row++) {
 				$data_sv = array(
@@ -266,27 +265,48 @@ class Clistsv extends MY_Controller
 					'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-2,$row)->getValue()))),
 					'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
 				);
-				// pr($data_sv);
 				
+				// foreach ($data_sv as $key => $value) {
+				// 	if (!$value) {
+				// 		$mess = "Thông tin sinh viên không được để trống";
+				// 		return;
+				// 		// $this->returnWithMess($res, $list_ma_sv);
+				// 	}
+				// }
 				$data_sv['FK_iMaNhapHoc'] = $this->Mlistsv->insertSV($data_sv, $ctdt);
 				$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
 				
-				for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn - 13;) {
-					$diem = array(
-						'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
-						'FK_iMaMonCTDT'	=> $sttmon[$i],
-					);
-					if ($so_cot == 5) {
-						$diem['sLichSu'] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
-						$diem['sNoiMien'] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+
+				$attr = array('sGDTC', 'sGDQP', 'sCDRNN', 'sXLRenLuyen', 'sTBCTL', 'iSoTCTL', 'iSoTCConNo', 'sXepLoaiTotNghiep', 'sSoQuyetDinhDauVao', 'dNgayQuyetDinhDauVao', 'sSoQuyetDinhTotNghiep', 'dNgayQuyetDinhTotNghiep', 'iSoHocPhanThiLai');
+
+				for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn;) {
+					if ($column < $lastColumn - 13) {
+						$diem = array(
+							'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+							'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+							'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+							'sLichSu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+							'sNoiMien'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+							'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
+							'FK_iMaMonCTDT'	=> $sttmon[$i],
+						);
+						// pr($diem);
+						$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
 					}
-					// pr($diem);
-					$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
+					else {
+						if($column == $lastColumn - 4 || $column == $lastColumn - 2) {
+							$data_sv[$attr[$count_attr++]] = implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($column++, $row)->getValue())));
+						}
+						else {
+							$data_sv[$attr[$count_attr++]] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+						}
+						
+
+					}
 
 				}
+				// pr($data_sv);
+				$this->Mlistsv->updateSV($data_sv);
 			}
 
 			#endregion
@@ -625,23 +645,5 @@ class Clistsv extends MY_Controller
 		header('Content-Type: application/vnd.ms-excel');
 		header('Content-Disposition: attachment;filename="Danh sách sinh viên.xls"');
 		$object_writer->save('php://output');
-	}
-
-	public function ExportListWord($conditional)
-	{
-		// pr($conditional);
-		$dssv = $this->Mlistsv->getListSV($conditional);
-		$data = array(
-			// 'mode'	=> $this->input->get('mode'),
-			'dssv'	=> $dssv,
-			'url'	=> base_url()
-		);
-		$data['print'] = false;
-		header("Content-Type: application/vnd.ms-word");
-		header("Expires: 0");
-		header("Cache-Control:  must-revalidate, post-check=0, pre-check=0");
-		header("Content-disposition: attachment; filename=".$dssv[0]['sTenBac'].'_'.$dssv[0]['sTenHe'].'_'.$dssv[0]['sTenNganh'].'_'.$dssv[0]['sTenBiKhoaac'].'_DanhSachBangDiem.doc');
-		$this->parser->parse('Vindsbangdiem', $data);
-		exit();
 	}
 }

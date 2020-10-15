@@ -3,6 +3,7 @@
         <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
         <h3 class="badge badge-warning text-dark p-2 w-100" style="font-size: 16px !important;"><button type="button" class="btn btn-outline p-0" style="color:#000;font-family:'arial' !important;" disabled>Yêu cầu: Điền đầy đủ các giá trị trong file excel! Xem mẫu tại </button> <button name="download_demo" value="1" class="btn btn-outline font-weight-bold p-0" type="submit">đây!</button></h3>
     </form> -->
+    <h3 id="noty_badge" class="badge badge-success text-dark p-2 w-100 d-none" style="font-size: 16px !important;">hí</h3>
     <div class="row">
 		<!-- Thêm file excel -->
         <div class="col-lg-12 mb-2">
@@ -18,8 +19,8 @@
                                 <span class="float-left text-uppercase mt-1 mr-2">Thêm file excel: </span>
                                 <input id="fileExcel" type="file" name="importExcel" multiple accept=".xlsx, .xls" required>
                                 <button type="button" id="btn_preview" class="btn btn-sm btn-success mr-2">Xem trước file excel</button>
-                                <button type="button" id="btn_submit" class="btn btn-sm btn-primary">Lưu bằng ajax</button>
-                                <!-- <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary">Lưu bảng php</button> -->
+                                <!-- <button type="button" id="btn_submit" class="btn btn-sm btn-primary">Lưu bằng ajax</button> -->
+                                <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary">Lưu bảng php</button>
                             </div>
                             <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
                         </form>
@@ -190,6 +191,7 @@
                                 <div class="col text-right mt-3">
                                     {if !empty($list_filter)}<button name="btn_reset_filter" value="1" class="btn btn-sm mr-2 btn-danger" type="submit">Huỷ bộ lọc</button>{/if}
                                     <button name="btn_filter" value="1" class="btn btn-sm mr-2 btn-success" type="submit">Lọc</button>
+                                    <button name="btn_export_word" value="1" class="btn btn-sm mr-2 btn-primary" type="submit">Xuất word theo bộ lọc</button>
                                     <button name="btn_delete" value="1" class="btn btn-sm mr-2 btn-danger" type="submit" onclick="return confirm('Xác nhận xoá?')">Xoá các sinh viên theo bộ lọc</button>
                                     <button name="btn_export" value="1" class="btn btn-sm btn-primary" type="submit">Xuất file excel theo bộ lọc</button>
                                 </div>
