@@ -118,6 +118,9 @@ class Mlistsv extends MY_Model
 		$this->db->where('PK_iMaNhapHoc', $masv);
 		$this->db->delete('tbl_nhaphoc');
 		$res += $this->db->affected_rows();
+		$this->db->where('PK_iMaSV', $masv);
+		$this->db->delete('tbl_sinhvien');
+		$res += $this->db->affected_rows();
 		return $res > 0 ? 1 : 0;
 	}
 
@@ -293,7 +296,7 @@ class Mlistsv extends MY_Model
 			$insert = array(
 				'PK_iMaDVCTDT'	=> time()%10000000 . rand(100,999),
 				'FK_iMaDonVi'	=> $ctdt['FK_iMaDonVi'],
-				'FK_iMaCTDT'		=> $ctdt['FK_iMaCTDT']
+				'FK_iMaCTDT'	=> $ctdt['FK_iMaCTDT']
 			);
 			$this->db->insert('tbl_donvi_ctdt', $insert);
 			return $insert['PK_iMaDVCTDT'];
@@ -544,6 +547,32 @@ class Mlistsv extends MY_Model
 		}
 	}
 	#endregion
+
+	public function insert_ds_lop($ds_lop)
+	{
+		return $this->db->insert_batch('tbl_lop_hanh_chinh', $ds_lop);
+	}
+
+	public function insert_ds_sv($ds_sv)
+	{
+		return $this->db->insert_batch('tbl_sinhvien', $ds_sv);
+	}
+
+	public function insert_ds_nhaphoc($ds_nhaphoc)
+	{
+		return $this->db->insert_batch('tbl_nhaphoc', $ds_nhaphoc);
+	}
+
+	public function insert_ds_sv_lop($ds_sv_lop)
+	{
+		return $this->db->insert_batch('tbl_sinhvien_lop', $ds_sv_lop);
+	}
+
+	public function insert_ds_diem($ds_diem)
+	{
+		return $this->db->insert_batch('tbl_diem', $ds_diem);
+	}
+
 
 	#region insert_diem
 	public function insertDiem($diem, $FK_iMaNhapHoc)

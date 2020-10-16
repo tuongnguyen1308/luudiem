@@ -19,7 +19,7 @@
                                 <span class="float-left text-uppercase mt-1 mr-2">Thêm file excel: </span>
                                 <input id="fileExcel" type="file" name="importExcel" multiple accept=".xlsx, .xls" required>
                                 <button type="button" id="btn_preview" class="btn btn-sm btn-success mr-2">Xem trước file excel</button>
-                                <!-- <button type="button" id="btn_submit" class="btn btn-sm btn-primary">Lưu bằng ajax</button> -->
+                                <button type="button" id="btn_submit" class="btn btn-sm btn-primary">Lưu bằng ajax</button>
                                 <button name="submitImport" id="submitImport" value="1" type="submit" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Đang lưu" class="btn btn-sm btn-primary">Lưu bảng php</button>
                             </div>
                             <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
@@ -157,9 +157,11 @@
                                 <span>Năm học: </span>
                                     <select name="namhoc" id="namhoc" class="form-control mr-3">
                                         <option value="">--Chọn Năm học--</option>
+                                        {if $listNam}
                                         {foreach $listNam as $k => $v}
                                             <option {if isset($list_filter.sNam) && $list_filter.sNam == $v.sNam} selected {/if} value="{$v.sNam}">{$v.sNam}</option>
                                         {/foreach}
+                                        {/if}
                                     </select>
                                 </div>
                                 <div class="form-group col-2 mb-0">
