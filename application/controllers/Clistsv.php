@@ -1,6 +1,6 @@
 <?php
 
-ini_set('max_execution_time', 5000); 
+ini_set('max_execution_time', 3000); 
 ini_set('memory_limit','2048M');
 ini_set('max_input_vars', 6000);
 /**
@@ -338,11 +338,27 @@ class Clistsv extends MY_Controller
 			}
 			#endregion
 			#region insert_sinh_vien_lop
+			//ds insert
 			$ds_lop		= array();
 			$ds_sv		= array();
 			$ds_nhaphoc	= array();
 			$ds_sv_lop	= array();
 			$ds_diem	= array();
+			
+			//ds update
+			$ds_lop_update		= array();
+			$ds_sv_update		= array();
+			$ds_nhaphoc_update	= array();
+			$ds_sv_lop_update	= array();
+			$ds_diem_update		= array();
+
+			//ds đã có
+			$ds_ma_lop		= $this->Mlistsv->get_ds_ma_lop();
+			$ds_ma_sv		= $this->Mlistsv->get_ds_ma_sv();
+			$ds_ma_nhaphoc	= $this->Mlistsv->get_ds_ma_nhaphoc();
+			$ds_ma_sv_lop	= $this->Mlistsv->get_ds_ma_sv_lop();
+			$ds_ma_diem		= $this->Mlistsv->get_ds_ma_diem();
+
 			for ($row = 11; $row <= $lastRow; $row++) {
 				$ten_lop = $worksheet->getCellByColumnAndRow(1,$row)->getValue();
 				$lop = array(
@@ -351,7 +367,12 @@ class Clistsv extends MY_Controller
 					'FK_iMaKhoa'=> $ctdt['FK_iMaKhoa']
 				);
 				if (!in_array($lop, $ds_lop)) {
-					array_push($ds_lop, $lop);
+					if (!in_array($lop['PK_iMaLop'], $ds_ma_lop)) {
+						array_push($ds_lop, $lop);
+					}
+					else {
+						array_push($ds_lop_update, $lop);
+					}
 				}
 
 				$sv = array(
@@ -362,7 +383,12 @@ class Clistsv extends MY_Controller
 					'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
 				);
 				if (!in_array($sv, $ds_sv)) {
-					array_push($ds_sv, $sv);
+					if (!in_array($sv['PK_iMaSV'], $ds_ma_sv)) {
+						array_push($ds_sv, $sv);
+					}
+					else {
+						array_push($ds_sv_update, $sv);
+					}
 				}
 
 				$nhaphoc = array(
@@ -384,7 +410,12 @@ class Clistsv extends MY_Controller
 					'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
 				);
 				if (!in_array($nhaphoc, $ds_nhaphoc)) {
-					array_push($ds_nhaphoc, $nhaphoc);
+					if (!in_array($nhaphoc['PK_iMaNhapHoc'], $ds_ma_nhaphoc)) {
+						array_push($ds_nhaphoc, $nhaphoc);
+					}
+					else {
+						array_push($ds_nhaphoc_update, $nhaphoc);
+					}
 				}
 				
 				$sv_lop = array(
@@ -393,7 +424,12 @@ class Clistsv extends MY_Controller
 					'FK_iMaLop'		=> $lop['PK_iMaLop']
 				);
 				if (!in_array($sv_lop, $ds_sv_lop)) {
-					array_push($ds_sv_lop, $sv_lop);
+					if (!in_array($sv_lop['PK_iMaSVLop'], $ds_ma_sv_lop)) {
+						array_push($ds_sv_lop, $sv_lop);
+					}
+					else {
+						array_push($ds_sv_lop_update, $sv_lop);
+					}
 				}
 
 				for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn - 13;) {
@@ -410,7 +446,12 @@ class Clistsv extends MY_Controller
 						$diem['sNoiMien']	= $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
 					}
 					if (!in_array($diem, $ds_diem)) {
-						array_push($ds_diem, $diem);
+						if (!in_array($diem['PK_iMaDiem'], $ds_ma_diem)) {
+							array_push($ds_diem, $diem);
+						}
+						else {
+							array_push($ds_diem_update, $diem);
+						}
 					}
 				}
 			}
@@ -428,7 +469,8 @@ class Clistsv extends MY_Controller
 			
 			#endregion
 
-			$res = $res ? 1 : 0;
+			// $res = $res ? 1 : 0;
+			$res = 1;
 			$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
         }
 	}

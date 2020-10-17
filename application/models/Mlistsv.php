@@ -548,6 +548,7 @@ class Mlistsv extends MY_Model
 	}
 	#endregion
 
+	#region insert_batch
 	public function insert_ds_lop($ds_lop)
 	{
 		return $this->db->insert_batch('tbl_lop_hanh_chinh', $ds_lop);
@@ -572,6 +573,68 @@ class Mlistsv extends MY_Model
 	{
 		return $this->db->insert_batch('tbl_diem', $ds_diem);
 	}
+	#endregion
+
+	#region get_ds_ma
+	public function get_ds_ma_lop()
+	{
+		$this->db->select('PK_iMaLop');
+		$res = $this->db->get('tbl_lop_hanh_chinh')->result_array();
+		return  $res;
+	}
+	public function get_ds_ma_sv()
+	{
+		$this->db->select('PK_iMaSV');
+		$res = $this->db->get('tbl_sinhvien')->result_array();
+		return  $res;
+	}
+	public function get_ds_ma_nhaphoc()
+	{
+		$this->db->select('PK_iMaNhapHoc');
+		$res = $this->db->get('tbl_nhaphoc')->result_array();
+		return  $res;
+	}
+	public function get_ds_ma_sv_lop()
+	{
+		$this->db->select('PK_iMaSVLop');
+		$res = $this->db->get('tbl_sinhvien_lop')->result_array();
+		return  $res;
+	}
+	public function get_ds_ma_diem()
+	{
+		$this->db->select('PK_iMaDiem');
+		$res = $this->db->get('tbl_diem')->result_array();
+		return  $res;
+	}
+	#endregion
+
+	#region update_batch
+	public function update_ds_lop($ds_lop_update)
+	{
+		return $this->db->update_batch('tbl_lop_hanh_chinh', $ds_lop_update, 'PK_iMaLop');
+	}
+
+	public function update_ds_sv($ds_sv_update)
+	{
+		return $this->db->update_batch('tbl_sinhvien', $ds_sv_update, 'PK_iMaSV');
+	}
+
+	public function update_ds_nhaphoc($ds_nhaphoc_update)
+	{
+		return $this->db->update_batch('tbl_nhaphoc', $ds_nhaphoc_update, 'PK_iNhapHoc');
+	}
+
+	public function update_ds_sv_lop($ds_sv_lop_update)
+	{
+		return $this->db->update_batch('tbl_sinhvien_lop', $ds_sv_lop_update, 'PK_iSVLop');
+	}
+
+	public function update_ds_diem($ds_diem_update)
+	{
+		return $this->db->update_batch('tbl_diem', $ds_diem_update, 'PK_iMaDiem');
+	}
+
+	#endregion
 
 
 	#region insert_diem

@@ -147,7 +147,7 @@ class Cstatistical extends MY_Controller
 
         $session = $this->session->userdata('user');
         $data = array(
-			'currentpage'	=> 'list',
+			'currentpage'	=> 'statistical',
 			'present_page'	=> $present_page,
 			'countPage'		=> $this->Mstatistical->countPage($conditional, $keyword, $present_page),
 			'DSSV'          => $list_sv,

@@ -1,6 +1,6 @@
 <?php
 
-class Mlistsv extends MY_Model
+class Mstatistical extends MY_Model
 {
     public function checkAccount($username)
     {
