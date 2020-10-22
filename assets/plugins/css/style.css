@@ -91,7 +91,7 @@ h5 {
   box-shadow: 0 0 3px rgba(86, 96, 117, 0.7);
   display: none;
   float: left;
-  font-size: 12px;
+  font-size: inherit;
   left: 0;
   list-style: none outside none;
   padding: 0;
@@ -3299,7 +3299,7 @@ body.tour-open .animated {
   border-bottom: 1px solid #e7eaec;
 }
 body {
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
   /*background-color: #2f4050;*/
   font-size: 14px;
   color: #000000;
@@ -3314,7 +3314,7 @@ body.full-height-layout #page-wrapper {
   height: 100%;
 }
 #page-wrapper {
-  min-height: auto;
+  min-height: 100%;
 }
 body.boxed-layout {
   background: url('patterns/shattered.png');
@@ -3443,7 +3443,7 @@ video {
   padding: 0 20px;
 }
 .wrapper-content {
-  padding: 20px 10px 40px;
+  padding: 10px 10px 40px;
   font-weight: 300;
 }
 #page-wrapper {
@@ -3959,7 +3959,7 @@ table.table-mail tr td {
   color: #1ab394;
 }
 .text-primary {
-  color: inherit;
+  color: #1ab394 !important;
 }
 .text-success {
   color: #1c84c6;

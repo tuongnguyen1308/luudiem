@@ -1,16 +1,16 @@
-function getRandomColor() {
-	var letters = '0123456789ABCDEF';
-	var color = '#';
-	for (var i = 0; i < 6; i++) {
-		color += letters[Math.floor(Math.random() * 16)];
-	}
-	return color;
-}
-$(document).ready(function () {
-	$('.feature').each(function (k, v){
-		$(v).css("background-color", getRandomColor());
-	});
-});
+// function getRandomColor() {
+// 	var letters = '0123456789ABCDEF';
+// 	var color = '#';
+// 	for (var i = 0; i < 6; i++) {
+// 		color += letters[Math.floor(Math.random() * 16)];
+// 	}
+// 	return color;
+// }
+// $(document).ready(function () {
+// 	$('.feature').each(function (k, v){
+// 		$(v).css("background-color", getRandomColor());
+// 	});
+// });
 
 var maBac	= '';
 var maHe	= '';
@@ -51,9 +51,19 @@ $(document).ready(() => {
 	});
 	$("#namhoc").click(function(){
 		postAjaxNamHoc();
+		$('.group_btn').addClass('d-none');
 	});
 	$("#donvi").click(function(){
 		postAjaxDonVi();
+		$('.group_btn').addClass('d-none');
+	});
+	$("#khoahoc").click(function(){
+		if ($('#khoahoc').val() != '') {
+			$('.group_btn').removeClass('d-none');
+		}
+		else {
+			$('.group_btn').addClass('d-none');
+		}
 	});
 
 	
@@ -85,6 +95,7 @@ $(document).ready(() => {
 		else {
 			$('#namhoc').html('<option value="">--Chọn Năm học--</option>');
 		}
+		$('.group_btn').addClass('d-none');
 	}
 
 	function postAjaxNamHoc() {
@@ -147,7 +158,15 @@ $(document).ready(() => {
 		}
 	}
 
-
+	$("body").on("change", "#fileExcel", function () {
+		var fileUpload = $("#fileExcel")[0];
+		var file_name = 'Chưa chọn file';
+		if (fileUpload.files[0]) {
+			file_name = fileUpload.files[0].name;
+		}
+		$('#file-name').text(file_name);
+		
+	});
 
 	$("body").on("click", "#btn_preview", function () {
 		
@@ -332,6 +351,7 @@ $(document).ready(() => {
 		// console.log(list_mon_ta);
 		$("#excel_preview").html('').append(thead).append(tbody);
 		$('#card-body').removeClass('d-none');
+		$('#submit_import').removeClass('d-none');
 	};
 
 	$('#undo_preview_excel').click(() => {
@@ -397,33 +417,10 @@ $(document).ready(() => {
 		
 	});
 
-
-	// $(".btnView").click(function(){
-	// 	$.post(
-	// 		"",
-	// 		{
-	// 			action: 'getSVGrade',
-	// 			masv: $(this).data('ma')
-	// 		},
-	// 		function(res){
-	//             console.log(res.length);
-	//             let i = 0;
-	//             $('#list_grade').html('');
-	//             $('#list_grade2').html('');
-	// 			res.forEach(mon => {
-	//                 let list_grade = '<tr>';
-	//                 list_grade += '<td>' + mon['sTenMon'] + '</td>';
-	//                 list_grade += '<td>' + mon['iDT10'] + '</td>';
-	//                 list_grade += '<td>' + mon['sDTChu'] + '</td>';
-	//                 list_grade += '<td>' + mon['iDT4'] + '</td>';
-	//                 list_grade += '</tr>';
-	//                 if (i++ < res.length / 2) {
-	//                     $('#list_grade').append(list_grade);
-	//                 }
-	//                 else {
-	//                     $('#list_grade2').append(list_grade);
-	//                 }
-	// 			});
-	// 	}, 'json');
-	// });
+	$('#submit_import').click(() => {
+		$(this).val('Đang tải lên...').attr('disabled', true);
+	});
+	$('btn[name=btn_delete]').click(() => {
+		$(this).val('Đang tải lên...').attr('disabled', true);
+	});
 })

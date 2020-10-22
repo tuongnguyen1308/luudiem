@@ -1,60 +1,31 @@
-<!-- <div class="row wrapper border-bottom white-bg page-heading">
-	<div class="col-md-10">
-		<h2>Hội đồng giáo sư nhà nước</h2>
-		<ol class="breadcrumb">
-			<li>
-				<a href="{$url}">Hệ thống</a>
-			</li>
-			<li>
-				Cá nhân
-			</li>
-			<li><strong>Đổi mật khẩu</strong></li>
-		</ol>
-	</div>
-	<div class="col"></div>
-</div> -->
-<div class="wrapper wrapper-content animated fadeInRight">
+<div class="wrapper wrapper-content" style="font-family: 'Segoe UI';">
 	<div class="row">
-		<div class="col-md-12">
-			<div class="ibox float-e-margins">
-				<div class="ibox-title">
-					<h5>Đổi mật khẩu</h5>
-				</div>
-				<div class="ibox-content">
-					<form action="" method="post" class="form-horizontal" id="formChangePass" style="max-width:400px">
+		<div class="col-sm-8 col-md-6 col-lg-4 mx-auto">
+			<div class="card card-signin my-5">
+				<div class="card-body">
+					<h5 class="card-title text-center">Đổi mật khẩu</h5>
+					<form action="" method="post" id="formReg" class="form-signin">
 						<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
-						<div class="form-group row">
-							<label class="col-12">Email</label>
-							<div class="col-12">
-								<input type="email" value="{$session.username}" class="form-control" disabled>
-							</div>
+						<div class="form-label-group">
+							<input type="email" id="email" name="email" value="{$session.username}" class="form-control" placeholder="Email address" required disabled>
+							<label for="email" class="user-select-none cursor-text">Địa chỉ Email</label>
 						</div>
-						<div class="form-group row">
-							<label class="col-12">Mật khẩu cũ</label>
-							<div class="col-12">
-								<input type="password" name="oldpass" class="form-control">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-12">Mật khẩu mới</label>
-							<div class="col-12">
-								<input type="password" name="newpass" class="form-control">
-							</div>
-						</div>
-						<div class="form-group row">
-							<label class="col-12">Xác nhận mật khẩu</label>
-							<div class="col-12">
-								<input type="password" name="repass" class="form-control">
-							</div>
-						</div>
-						<div class="col-md-offset-2 height-15 m-b-sm" id="errorPlace">
 
+						<div class="form-label-group">
+							<input type="password" id="oldpass" name="oldpass" class="form-control" placeholder="Mật khẩu" required autofocus>
+							<label for="oldpass" class="user-select-none cursor-text">Mật khẩu cũ</label>
 						</div>
-						<div class="form-group">
-							<div class="col-md-offset-2 col-md-10">
-								<button type="submit" name="btnChange" value="ok" class="btn btn-primary">Đổi mật khẩu</button>
-							</div>
+						<div class="form-label-group">
+							<input type="password" id="newpass" name="newpass" class="form-control" placeholder="Mật khẩu" required>
+							<label for="newpass" class="user-select-none cursor-text">Mật khẩu mới</label>
 						</div>
+
+						<div class="form-label-group">
+							<input type="password" id="repass" name="repass" class="form-control" placeholder="Nhập lại mật khẩu" required>
+							<label for="repass" class="user-select-none cursor-text">Xác nhận mật khẩu mới</label>
+						</div>
+						<div class="height-10 text-center m-t-sm" id="errorPlace"></div>
+						<button name="btnChange" value="ok" class="btn btn-primary btn-block text-uppercase" type="submit">Đổi mật khẩu</button>
 					</form>
 				</div>
 			</div>

@@ -6,7 +6,7 @@
 	<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 
 	<title>Hệ thống lưu điểm</title>
-
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- <link rel="icon" href="{$url}assets/plugins/img/logo.png"> -->
 	<link href="{$url}assets/plugins/css/bootstrap.min.css" rel="stylesheet">
 	<link href="{$url}assets/plugins/font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -19,6 +19,7 @@
 
 	<link href="{$url}assets/plugins/css/animate.css" rel="stylesheet">
 	<link href="{$url}assets/plugins/css/style.css" rel="stylesheet">
+    <link href="{$url}assets/plugins/css/your_style.css?ver=1.0" rel="stylesheet">
 	<link href="{$url}assets/plugins/css/custom_style.css" rel="stylesheet">
     <script src="{$url}assets/plugins/js/jquery-3.1.1.min.js"></script>
     <script src="{$url}assets/plugins/js/xlsx.full.min.js"></script>
@@ -40,45 +41,83 @@
         });
     </script>
 </head>
-<body class="md-skin">
+<body class="main-bg">
 	<div id="wrapper">
-		<nav class="navbar-default navbar-static-side" role="navigation" id="menu-noshadow">
+		<!-- <nav class="navbar-default navbar-static-side" role="navigation" id="menu-noshadow">
 			<div class="sidebar-collapse">
 				<ul class="nav metismenu" id="side-menu">
 					<li class="nav-header" style="width:220px">
-							<a href="{$url}infouv">
+							<a href="#">
 								<strong class="text-white font-weight-bold">{$session.username}</strong>
 							</a>
 						<div class="logo-element">
                             QLDT
 						</div>
 					</li>
-                        <!-- <li class="p-3 w-100 {($currentpage=='info')?'active':''}"><a href="{$url}infouv">Thông tin cá nhân</a></li> -->
                         <li class="p-3 w-100 {($currentpage=='list')?'active':''}"><a href="{$url}listsv">Danh sách sinh viên</a></li>
 						<li class="p-3 w-100 {($currentpage=='statistical')?'active':''}"><a href="{$url}statistical">Thống kê</a></li>
 				</ul>
 			</div>
 		</nav>
-		<div id="page-wrapper" class="gray-bg dashbard-1">
-			<div class="row border-bottom">
-				<nav class="navbar navbar-static-top" role="navigation" style="width:100%">
-					<!-- <div class="navbar-header">
-            			<div class="navbar-minimalize minimalize-styl-2 btn btn-primary">
-            				<i class="fa fa-bars"></i>
-            			</div>
-            		</div> -->
-					<ul class="nav navbar-top-links navbar-right ml-auto">
-						<!-- <li class="hidden-xs">
-							<a class="m-r-sm text-muted welcome-message">{$session.hoTen}</a>
-						</li> -->
-						<li><a href="{$url}changepassword">Đổi mật khẩu</a></li>
-						<li>
-							<a href="{$url}logout">
-								<i class="fa fa-sign-out"></i><span class="visible hidden-xs">Đăng xuất</span>
+		<div id="page-wrapper" class="gray-bg dashbard-1"> -->
+
+
+
+			
+		<!-- Content Wrapper -->
+		<div id="content-wrapper" class="d-flex flex-column">
+
+			<!-- Main Content -->
+			<div id="content">
+
+				<!-- Topbar -->
+				<nav class="navbar border-radius-bottom navbar-expand navbar-light bg-white topbar mb-2 static-top shadow mx-4">
+
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item dropdown no-arrow">
+							<a class="nav-link {($currentpage=='add')?'active':''}" href="{$url}addfile">
+								<i class="fa fa-list"></i>
+								<span>Thêm file Excel</span>
+							</a>
+						</li>
+						<li class="nav-item dropdown no-arrow">
+							<a class="nav-link {($currentpage=='list')?'active':''}" href="{$url}listsv">
+								<i class="fa fa-list"></i>
+								<span>Danh sách sinh viên</span>
+							</a>
+						</li>
+						<li class="nav-item dropdown no-arrow">
+							<a class="nav-link {($currentpage=='statistical')?'active':''}" href="{$url}statistical">
+								<i class="fa fa-area-chart"></i>
+								<span class="">Thống kê</span>
 							</a>
 						</li>
 					</ul>
+					<!-- Topbar Navbar -->
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item dropdown no-arrow">
+						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="mr-2 d-none d-lg-inline"><i class="fa fa-user"></i> {$session.username}</span>
+							<!-- <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60"> -->
+						</a>
+						<!-- Dropdown - User Information -->
+						<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+							<a class="dropdown-item mt-2 pt-2 pb-2" href="{$url}changepassword">
+							<i class="fa fa-key"></i>
+							Đổi mật khẩu
+							</a>
+							<a class="dropdown-item mb-2 pt-2 pb-2" href="{$url}logout" data-toggle="modal" data-target="#logoutModal">
+							<i class="fa fa-sign-out"></i>
+							Đăng xuất
+							</a>
+						</li>
+
+					</ul>
+
 				</nav>
-			</div>
+				<!-- End of Topbar -->
+
+				<!-- Begin Page Content -->
+				<div class="container-fluid">
 
 		

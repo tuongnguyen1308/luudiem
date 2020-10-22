@@ -15,9 +15,6 @@ class Cwelcome extends MY_Controller
 
     public function index()
     {
-    	// if (!checkTimeAccess()){
-    	// 	setMessages('warning', 'Hiện không trong thời gian cập nhật hồ sơ ứng viên!');
-        // }
         $data = array(
             'url'   => base_url(),
             'message' => getMessages(),

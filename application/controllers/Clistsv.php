@@ -127,7 +127,7 @@ class Clistsv extends MY_Controller
 		// }
 		if ($this->input->post('btn_delete')) {
 			// pr($conditional);
-			$this->deleteSVWith($conditional);
+			$this->deleteSVWith($conditional, $keyword);
 		}
 		if ($this->input->post('btn_export_word')) {
 			// pr($conditional);
@@ -159,7 +159,8 @@ class Clistsv extends MY_Controller
 			'listKhoaHoc'	=> $listKhoaHoc,
 			'list_filter'	=> $conditional,
 			'keyword'		=> $this->session->flashdata('keyword'),
-			'filter'		=> $this->session->flashdata('filter')
+			'filter'		=> $this->session->flashdata('filter'),
+			'countSV'		=> count($this->Mlistsv->getListSV($conditional, $keyword))
 		);
 		// pr($data['list_filter']);
 		// pr($data['countPage']);
@@ -200,392 +201,6 @@ class Clistsv extends MY_Controller
 		$db = $this->Mlistsv->getKhoaHoc($conditional['FK_iMaDVCTDT']);
 		exit(json_encode($db));
 	}
-    
-    // public function importSV()
-    // {
-	// 	$list_ma_sv = array();
-    //     // pr($_FILES['importExcel']);
-    //     if (isset($_FILES['importExcel']['name'])) {
-	// 		$res = 0;
-    //         $path = $_FILES['importExcel']['tmp_name'];
-    //         $object = PHPExcel_IOFactory::load($path);
-    //         $worksheet = $object->getSheet(0);
-	// 		$lastRow		= $worksheet->getHighestRow();
-	// 		$hightestCol	= $worksheet->getHighestColumn();
-	// 		$lastColumn		= PHPExcel_Cell::columnIndexFromString($hightestCol);
-	// 		// pr($hightestCol);
-			
-	// 		#region insert_ctdt
-	// 		$ctdt = array(
-	// 			'sTenBac'	=> $worksheet->getCellByColumnAndRow(3,4)->getValue(),
-	// 			'sTenDonVi'	=> $worksheet->getCellByColumnAndRow(3,5)->getValue(),
-	// 			'sNam'		=> $worksheet->getCellByColumnAndRow(3,6)->getValue(),
-	// 			'sTenHe'	=> $worksheet->getCellByColumnAndRow(7,4)->getValue(),
-	// 			'sTenNganh'	=> $worksheet->getCellByColumnAndRow(7,5)->getValue(),
-	// 			'iKhoa'		=> $worksheet->getCellByColumnAndRow(7,6)->getValue(),
-	// 		);
-	// 		$ctdt = $this->Mlistsv->insertCTDT($ctdt);
-	// 		#endregion
-
-	// 		$sttmon = array();
-	// 		#region import_mon
-	// 		$so_cot = $ctdt['sTenDonVi'] == 'Đào tạo từ xa' ? 5 : 3;
-	// 		for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += $so_cot) {
-	// 			$mon = array(
-	// 				'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
-	// 				'sTenMonTA'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue(),
-	// 				'iSoTinChi'	=> $worksheet->getCellByColumnAndRow($column, 9)->getValue()
-	// 			);
-				
-	// 			array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i++));
-	// 			// pr($mon);
-
-	// 		}
-	// 		#endregion
-	// 		#region insert_sinh_vien_lop
-	// 		for ($row = 11; $row <= $lastRow; $row++) {
-	// 			$data_sv = array(
-	// 				'iSTT'			=> $worksheet->getCellByColumnAndRow(0,$row)->getValue(),
-	// 				'sTenLop'		=> $worksheet->getCellByColumnAndRow(1,$row)->getValue(),
-	// 				'PK_iMaNhapHoc'	=> $worksheet->getCellByColumnAndRow(2,$row)->getValue(),
-	// 				'sHo'			=> $worksheet->getCellByColumnAndRow(3,$row)->getValue(),
-	// 				'sTen'			=> $worksheet->getCellByColumnAndRow(4,$row)->getValue(),
-	// 				'dNgaySinh'		=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow(5,$row)->getValue()))),
-	// 				'sGioiTinh'		=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
-	// 				'sGDTC'			=> $worksheet->getCellByColumnAndRow($lastColumn-13,$row)->getValue(),
-	// 				'sGDQP'			=> $worksheet->getCellByColumnAndRow($lastColumn-12,$row)->getValue(),
-	// 				'sCDRNN'		=> $worksheet->getCellByColumnAndRow($lastColumn-11,$row)->getValue(),
-	// 				'sXLRenLuyen'	=> $worksheet->getCellByColumnAndRow($lastColumn-10,$row)->getValue(),
-	// 				'sTBCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-9,$row)->getValue(),
-	// 				'iSoTCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-8,$row)->getValue(),
-	// 				'iSoTCConNo'	=> $worksheet->getCellByColumnAndRow($lastColumn-7,$row)->getValue(),
-	// 				'sXepLoaiTotNghiep'			=> $worksheet->getCellByColumnAndRow($lastColumn-6,$row)->getValue(),
-	// 				'sSoQuyetDinhDauVao'		=> $worksheet->getCellByColumnAndRow($lastColumn-5,$row)->getValue(),
-	// 				'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-4,$row)->getValue()))),
-	// 				'sSoQuyetDinhTotNghiep'		=> $worksheet->getCellByColumnAndRow($lastColumn-3,$row)->getValue(),
-	// 				'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-2,$row)->getValue()))),
-	// 				'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
-	// 			);
-	// 			// pr($data_sv);
-				
-	// 			$data_sv['FK_iMaNhapHoc'] = $this->Mlistsv->insertSV($data_sv, $ctdt);
-	// 			$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
-				
-	// 			for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn - 13;) {
-	// 				$diem = array(
-	// 					'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-	// 					'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-	// 					'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-	// 					'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
-	// 					'FK_iMaMonCTDT'	=> $sttmon[$i],
-	// 				);
-	// 				if ($so_cot == 5) {
-	// 					$diem['sLichSu'] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
-	// 					$diem['sNoiMien'] = $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
-	// 				}
-	// 				// pr($diem);
-	// 				$this->Mlistsv->insertDiem($diem, $sttmon[$i++]);
-
-	// 			}
-	// 		}
-
-	// 		#endregion
-
-	// 		$res = 1;
-	// 		$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
-    //     }
-	// }
-
-    public function importSV()
-    {
-		$list_ma_sv = array();
-        // pr($_FILES['importExcel']);
-        if (isset($_FILES['importExcel']['name'])) {
-			$res = 0;
-            $path = $_FILES['importExcel']['tmp_name'];
-            $object = PHPExcel_IOFactory::load($path);
-            $worksheet = $object->getSheet(0);
-			$lastRow		= $worksheet->getHighestRow();
-			$hightestCol	= $worksheet->getHighestColumn();
-			$lastColumn		= PHPExcel_Cell::columnIndexFromString($hightestCol);
-			// pr($hightestCol);
-			
-			#region insert_ctdt
-			$ctdt = array(
-				'sTenBac'	=> $worksheet->getCellByColumnAndRow(3,4)->getValue(),
-				'sTenDonVi'	=> $worksheet->getCellByColumnAndRow(3,5)->getValue(),
-				'sNam'		=> $worksheet->getCellByColumnAndRow(3,6)->getValue(),
-				'sTenHe'	=> $worksheet->getCellByColumnAndRow(7,4)->getValue(),
-				'sTenNganh'	=> $worksheet->getCellByColumnAndRow(7,5)->getValue(),
-				'iKhoa'		=> $worksheet->getCellByColumnAndRow(7,6)->getValue(),
-			);
-			$ctdt = $this->Mlistsv->insertCTDT($ctdt);
-			#endregion
-
-			$sttmon = array();
-			#region import_mon
-			$so_cot = $ctdt['sTenHe'] == 'Đào tạo từ xa' ? 5 : 3;
-			for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += $so_cot) {
-				$mon = array(
-					'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
-					'sTenMonTA'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue(),
-					'iSoTinChi'	=> $worksheet->getCellByColumnAndRow($column, 9)->getValue()
-				);
-				
-				array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i++));
-				// pr($mon);
-
-			}
-			#endregion
-			#region insert_sinh_vien_lop
-			//ds insert
-			$ds_lop		= array();
-			$ds_sv		= array();
-			$ds_nhaphoc	= array();
-			$ds_sv_lop	= array();
-			$ds_diem	= array();
-			
-			//ds update
-			$ds_lop_update		= array();
-			$ds_sv_update		= array();
-			$ds_nhaphoc_update	= array();
-			$ds_sv_lop_update	= array();
-			$ds_diem_update		= array();
-
-			//ds đã có
-			$ds_ma_lop		= $this->Mlistsv->get_ds_ma_lop();
-			$ds_ma_sv		= $this->Mlistsv->get_ds_ma_sv();
-			$ds_ma_nhaphoc	= $this->Mlistsv->get_ds_ma_nhaphoc();
-			$ds_ma_sv_lop	= $this->Mlistsv->get_ds_ma_sv_lop();
-			$ds_ma_diem		= $this->Mlistsv->get_ds_ma_diem();
-
-			for ($row = 11; $row <= $lastRow; $row++) {
-				$ten_lop = $worksheet->getCellByColumnAndRow(1,$row)->getValue();
-				$lop = array(
-					'PK_iMaLop'	=> $ctdt['FK_iMaKhoa'].'_'.$ten_lop,
-					'sTenLop'	=> $ten_lop,
-					'FK_iMaKhoa'=> $ctdt['FK_iMaKhoa']
-				);
-				if (!in_array($lop, $ds_lop)) {
-					if (!in_array($lop['PK_iMaLop'], $ds_ma_lop)) {
-						array_push($ds_lop, $lop);
-					}
-					else {
-						array_push($ds_lop_update, $lop);
-					}
-				}
-
-				$sv = array(
-					'PK_iMaSV'	=> $worksheet->getCellByColumnAndRow(2,$row)->getValue(),
-					'sHo'		=> $worksheet->getCellByColumnAndRow(3,$row)->getValue(),
-					'sTen'		=> $worksheet->getCellByColumnAndRow(4,$row)->getValue(),
-					'dNgaySinh'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow(5,$row)->getValue()))),
-					'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
-				);
-				if (!in_array($sv, $ds_sv)) {
-					if (!in_array($sv['PK_iMaSV'], $ds_ma_sv)) {
-						array_push($ds_sv, $sv);
-					}
-					else {
-						array_push($ds_sv_update, $sv);
-					}
-				}
-
-				$nhaphoc = array(
-					'PK_iMaNhapHoc'	=> $sv['PK_iMaSV'],
-					'FK_iMaSV'		=> $sv['PK_iMaSV'],
-					'FK_iMaKhoa'	=> $ctdt['FK_iMaKhoa'],
-					'sGDTC'			=> $worksheet->getCellByColumnAndRow($lastColumn-13,$row)->getValue(),
-					'sGDQP'			=> $worksheet->getCellByColumnAndRow($lastColumn-12,$row)->getValue(),
-					'sCDRNN'		=> $worksheet->getCellByColumnAndRow($lastColumn-11,$row)->getValue(),
-					'sXLRenLuyen'	=> $worksheet->getCellByColumnAndRow($lastColumn-10,$row)->getValue(),
-					'sTBCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-9,$row)->getValue(),
-					'iSoTCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-8,$row)->getValue(),
-					'iSoTCConNo'	=> $worksheet->getCellByColumnAndRow($lastColumn-7,$row)->getValue(),
-					'sXepLoaiTotNghiep'			=> $worksheet->getCellByColumnAndRow($lastColumn-6,$row)->getValue(),
-					'sSoQuyetDinhDauVao'		=> $worksheet->getCellByColumnAndRow($lastColumn-5,$row)->getValue(),
-					'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-4,$row)->getValue()))),
-					'sSoQuyetDinhTotNghiep'		=> $worksheet->getCellByColumnAndRow($lastColumn-3,$row)->getValue(),
-					'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-2,$row)->getValue()))),
-					'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
-				);
-				if (!in_array($nhaphoc, $ds_nhaphoc)) {
-					if (!in_array($nhaphoc['PK_iMaNhapHoc'], $ds_ma_nhaphoc)) {
-						array_push($ds_nhaphoc, $nhaphoc);
-					}
-					else {
-						array_push($ds_nhaphoc_update, $nhaphoc);
-					}
-				}
-				
-				$sv_lop = array(
-					'PK_iMaSVLop'	=> $lop['PK_iMaLop'].'_'.$nhaphoc['PK_iMaNhapHoc'],
-					'FK_iMaNhapHoc'	=> $nhaphoc['PK_iMaNhapHoc'],
-					'FK_iMaLop'		=> $lop['PK_iMaLop']
-				);
-				if (!in_array($sv_lop, $ds_sv_lop)) {
-					if (!in_array($sv_lop['PK_iMaSVLop'], $ds_ma_sv_lop)) {
-						array_push($ds_sv_lop, $sv_lop);
-					}
-					else {
-						array_push($ds_sv_lop_update, $sv_lop);
-					}
-				}
-
-				for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn - 13;) {
-					$diem = array(
-						'PK_iMaDiem'	=> $nhaphoc['PK_iMaNhapHoc'].'_'.$sttmon[$i],
-						'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
-						'FK_iMaNhapHoc'	=> $nhaphoc['PK_iMaNhapHoc'],
-						'FK_iMaMonCTDT'	=> $sttmon[$i++],
-					);
-					if ($so_cot == 5) {
-						$diem['sLichSu']	= $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
-						$diem['sNoiMien']	= $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
-					}
-					if (!in_array($diem, $ds_diem)) {
-						if (!in_array($diem['PK_iMaDiem'], $ds_ma_diem)) {
-							array_push($ds_diem, $diem);
-						}
-						else {
-							array_push($ds_diem_update, $diem);
-						}
-					}
-				}
-			}
-			// pr($ds_lop);
-			// pr($ds_diem);
-			$res =	$this->Mlistsv->insert_ds_lop($ds_lop);
-			// pr($ds_sv);
-			// pr($res);
-			
-			$res =	$this->Mlistsv->insert_ds_sv($ds_sv);
-			$res =	$this->Mlistsv->insert_ds_nhaphoc($ds_nhaphoc);
-			$res =	$this->Mlistsv->insert_ds_sv_lop($ds_sv_lop);
-			
-			$res =	$this->Mlistsv->insert_ds_diem($ds_diem);
-			
-			#endregion
-
-			// $res = $res ? 1 : 0;
-			$res = 1;
-			$this->returnWithMess($res, $list_ma_sv, $new_sv['sMaSV']);
-        }
-	}
-
-    public function importExcelAjax()
-    {
-		$list_ma_sv = array();
-        
-		$res = 0;
-		
-		#region insert_ctdt
-		$ctdt = array(
-			'sTenBac'	=> $this->input->post('bac'),
-			'sTenDonVi'	=> $this->input->post('khoa'),
-			'sNam'		=> $this->input->post('namhoc'),
-			'sTenHe'	=> $this->input->post('he'),
-			'sTenNganh'	=> $this->input->post('nganh'),
-			'iKhoa'		=> $this->input->post('khoahoc'),
-		);
-		$ctdt = $this->Mlistsv->insertCTDT($ctdt);
-		
-		#endregion
-
-		#region import_mon
-		$list_mon		= $this->input->post('list_mon');
-		$list_mon_ta	= $this->input->post('list_mon_ta');
-		$list_stc		= $this->input->post('list_stc');
-		
-		$sttmon = array();
-		for ($i = 0; $i < count($list_mon); $i++) {
-			$mon = array(
-				'sTenMon'	=> $list_mon[$i],
-				'sTenMonTA'	=> $list_mon_ta[$i],
-				'iSoTinChi'	=> $list_stc[$i]
-			);
-			
-			array_push($sttmon, $this->Mlistsv->insertMon($mon, $ctdt, $i));
-			// pr($mon);
-
-		}
-		#endregion
-
-		// $mess = '';
-		// if ($res) {
-		// 	$mess = 'success';
-		// }
-		// else {
-		// 	$mess = 'fail';
-		// }
-		$response = array(
-			'sttmon'	=> $sttmon,
-			'ctdt'		=> $ctdt
-		);
-
-		echo json_encode($response);
-		exit();
-	}
-	
-	public function import_diem()
-	{
-		
-		#region insert_sinh_vien_diem
-		$sttmon	= $this->input->post('stt_mon');
-		$sv		= $this->input->post('sv');
-		$ctdt	= $this->input->post('ctdt');
-		// pr($ctdt);
-		// pr($sv);
-		
-		$data_sv = array(
-			'FK_iMaKhoa'				=> $ctdt['FK_iMaKhoa'],
-			'iSTT'						=> $sv[0],
-			'sTenLop'					=> $sv[1],
-			'sMaSV'						=> $sv[2],
-			'sHo'						=> $sv[3],
-			'sTen'						=> $sv[4],
-			'dNgaySinh'					=> implode('-', array_reverse(explode('/',$sv[5]))),
-			'sGioiTinh'					=> $sv[6],
-			'sGDTC'						=> $sv[7],
-			'sGDQP'						=> $sv[8],
-			'sCDRNN'					=> $sv[9],
-			'sXLRenLuyen'				=> $sv[10],
-			'sTBCTL'					=> $sv[11],
-			'iSoTCTL'					=> $sv[12],
-			'iSoTCConNo'				=> $sv[13],
-			'sXepLoaiTotNghiep'			=> $sv[14],
-			'sSoQuyetDinhDauVao'		=> $sv[15],
-			'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$sv[16]))),
-			'sSoQuyetDinhTotNghiep'		=> $sv[17],
-			'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$sv[18]))),
-			'iSoHocPhanThiLai'			=> $sv[19]
-		);
-
-		$data_sv['FK_iMaNhapHoc'] = $this->Mlistsv->insert_sv($data_sv);
-		
-		$this->Mlistsv->insertSV_Lop($data_sv, $ctdt);
-		
-		$list_diem_1_sv = $sv[20];
-		for ($i = 0, $j = 0; $i < count($list_diem_1_sv);) {
-			$diem = array(
-				'iDT10'			=> $list_diem_1_sv[$i++],
-				'sDTChu'		=> $list_diem_1_sv[$i++],
-				'iDT4'			=> $list_diem_1_sv[$i++],
-				'sLichSu'		=> $list_diem_1_sv[$i++],
-				'sNoiMien'		=> $list_diem_1_sv[$i++],
-				'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
-				'FK_iMaMonCTDT'	=> $sttmon[$j],
-			);
-			// pr($diem);
-			$res = $this->Mlistsv->insertDiem($diem, $sttmon[$j++]);
-		}
-		echo json_encode($res?1:0);
-		exit();
-		#endregion
-
-	}
 
 	public function delSV()
 	{
@@ -597,9 +212,9 @@ class Clistsv extends MY_Controller
 		redirect(base_url().'listsv');
 	}
 	
-	public function deleteSVWith($conditional)
+	public function deleteSVWith($conditional, $keyword)
 	{
-		$res = $this->Mlistsv->deleteSVWith($conditional);
+		$res = $this->Mlistsv->deleteSVWith($conditional, $keyword);
 		setMessages('success', 'Đã xoá ' . $res . ' sinh viên');
 		redirect(base_url().'listsv');
 	}
@@ -635,176 +250,190 @@ class Clistsv extends MY_Controller
 		redirect(base_url().'listsv');
 	}
 
-	public function download_demo()
-	{
-		$link = base_url().'assets/demo_file/demo.xlsx';
-		$ext  = substr(strrchr($link, '.'), 1);
-		header('Content-Description: File Transfer');
-		header('Content-Type: application/octet-stream');
-		header('Content-Disposition: attachment; filename="demo.xlsx"');
-		readfile($link);
-		exit();
-	}
-
 	public function getDataToExport()
 	{
 		$session = $this->session->userdata('user');
 		$maKhoaHoc = $this->input->post('khoahoc');
-		$sv = $this->Mlistsv->getDSSVIn($maKhoaHoc);
+		// pr($maKhoaHoc);
+		$conditional['PK_iMaKhoa'] = $maKhoaHoc;
+		$sv = $this->Mlistsv->getListSV($conditional);
 		// pr($sv);
 
-		$object = new PHPExcel();
+		if ($sv) {
+			$object = new PHPExcel();
 
-		$object->setActiveSheetIndex(0);
-
-
-		$column = 0;
-		$row = 1;
-		$from_col = 'A';
-		$to_col = 'A';
-		$from_row = 7;
-		$to_row = 10;
-
-		$object->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(11, $row++, 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'HỘI ĐỒNG XÉT TỐT NGHIỆP');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(11, $row++, 'Độc lập - Tự do - Hạnh phúc');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row++, 'KẾT QUẢ HỌC TẬP TOÀN KHÓA CỦA SINH VIÊN');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Bậc:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sTenBac']);
-		$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Hệ:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['sTenHe']);
-		$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Khoa:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sTenDonVi']);
-		$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Ngành:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['sTenNganh']);
-		$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Năm Học:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sNam']);
-		$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Khoá Học:');
-		$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['iKhoa']);
-		
+			$object->setActiveSheetIndex(0);
 
 
+			$column = 0;
+			$row = 1;
+			$from_col = 'A';
+			$to_col = 'A';
+			$from_row = 7;
+			$to_row = 10;
 
+			$object->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'TRƯỜNG ĐẠI HỌC MỞ HÀ NỘI');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(11, $row++, 'CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(1, $row, 'HỘI ĐỒNG XÉT TỐT NGHIỆP');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(11, $row++, 'Độc lập - Tự do - Hạnh phúc');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row++, 'KẾT QUẢ HỌC TẬP TOÀN KHÓA CỦA SINH VIÊN');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Bậc:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sTenBac']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Hệ:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['sTenHe']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Khoa:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sTenDonVi']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Ngành:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['sTenNganh']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Năm Học:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sNam']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Khoá Học:');
+			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['iKhoa']);
+			
 
 
 
+			//check Hệ đào tạo:
+			$so_cot_trong_mon = $sv[0]['sTenHe'] == 'Đào tạo từ xa' ? 5 : 3;
 
-		$table_columns = array("STT", "Lớp", "Mã SV", "Họ và", "Tên", "Ngày sinh", "Giới");
-		foreach($table_columns as $field)
-		{
-			// echo $test++ . '\n';
-			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $field);
-			$from_col = ++$to_col;
-		}
-		// pr($test);
-		$to_col++;
-		$to_col++;
-		$to_row = 7;
-		foreach ($sv[0]['diem'] as $k => $v) {
-			// pr($v);
-			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
-			$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
-			$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMon']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMonTA']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['iSoTinChi']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
-			$row-=3;
-			for ($i=0; $i < 3; $i++) { 
-				$from_col++;
+
+
+			$table_columns = array("STT", "Lớp", "Mã SV", "Họ và", "Tên", "Ngày sinh", "Giới");
+			foreach($table_columns as $field)
+			{
+				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $field);
+				$from_col = ++$to_col;
+			}
+			// pr($test);
+			for ($i=1; $i < $so_cot_trong_mon; $i++) { 
 				$to_col++;
 			}
-		}
-		$to_col = $from_col;
-		$to_row = 10;
-		$list_last_col = array('GDTC', 'GDQP', 'CĐRNN', 'XL Rèn Luyện', 'TBC TL', 'Số TC TL', 'Số TC còn nợ', 'Xếp loại tốt nghiệp', 'Số quyết định đầu vào', 'Ngày quyết định đầu vào', 'Số quyết định tốt nghiệp', 'Ngày quyết định tốt nghiệp', 'Số học phần thi lại');
-		foreach($list_last_col as $field)
-		{
-			$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $field);
-			$from_col = ++$to_col;
-		}
-		$lastCol = $column;
-		$column = 0;
-		$row = 11;
-		foreach ($sv as $k => $v) {
-			// pr($v);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, ++$k);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTenLop']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaNhapHoc']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHo']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTen']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgaySinh'])));
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGioiTinh']);
-			foreach ($v['diem'] as $stt => $diem) {
-				// pr($diem);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT10']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sDTChu']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT4']);
+			$to_row = 7;
+			foreach ($sv[0]['diem'] as $k => $v) {
+				// pr($v);
+				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+				$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
+				$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMon']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMonTA']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['iSoTinChi']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
+				if ($so_cot_trong_mon == 5) {
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Lịch sử');
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Nơi Miễn');
+				}
+				$row-=3;
+				for ($i=1; $i <= $so_cot_trong_mon; $i++) { 
+					$from_col++;
+					$to_col++;
+				}
+				if ($sv[0]['diem'][46] == $v) {
+					break;
+				}
 			}
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGDTC']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGDQP']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sCDRNN']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sXLRenLuyen']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTBCTL']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCTL']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCConNo']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sXepLoaiTotNghiep']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sSoQuyetDinhDauVao']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgayQuyetDinhDauVao'])));
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sSoQuyetDinhTotNghiep']);
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgayQuyetDinhTotNghiep'])));
-			$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoHocPhanThiLai']);
-			$row++;
+			$to_col = $from_col;
+			$to_row = 10;
+			$list_last_col = array('GDTC', 'GDQP', 'CĐRNN', 'XL Rèn Luyện', 'TBC TL', 'Số TC TL', 'Số TC còn nợ', 'Xếp loại tốt nghiệp', 'Số quyết định đầu vào', 'Ngày quyết định đầu vào', 'Số quyết định tốt nghiệp', 'Ngày quyết định tốt nghiệp', 'Số học phần thi lại');
+			foreach($list_last_col as $field)
+			{
+				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $field);
+				$from_col = ++$to_col;
+			}
+			$lastCol = $column;
 			$column = 0;
+			$row = 11;
+			foreach ($sv as $k => $v) {
+				// pr($v);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, ++$k);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTenLop']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaNhapHoc']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHo']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTen']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgaySinh'])));
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGioiTinh']);
+				foreach ($v['diem'] as $stt => $diem) {
+					// pr($diem);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT10']);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sDTChu']);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT4']);
+					if ($so_cot_trong_mon == 5) {
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sLichSu']);
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sNoiMien']);
+					}
+					if ($v['diem'][46] == $diem) {
+						break;
+					}
+				}
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGDTC']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGDQP']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sCDRNN']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sXLRenLuyen']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTBCTL']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCTL']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoTCConNo']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sXepLoaiTotNghiep']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sSoQuyetDinhDauVao']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgayQuyetDinhDauVao'])));
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sSoQuyetDinhTotNghiep']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgayQuyetDinhTotNghiep'])));
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['iSoHocPhanThiLai']);
+				$row++;
+				$column = 0;
+			}
+
+
+			$styleArray = array(
+				'alignment' => array(
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+					'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+				),
+				'font'  => array(
+					'size'  => 14,
+					'name'  => 'Times New Roman'
+				)
+			);
+			$object->getDefaultStyle()
+				->applyFromArray($styleArray);
+
+			$left_style = array(
+				'alignment' => array(
+					'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT
+				),
+				'font'  => array(
+					'size'  => 14,
+					'name'  => 'Times New Roman'
+				)
+			);
+			
+			$object->getActiveSheet()->getStyle("D10:E".$row)->applyFromArray($left_style);
+			$object->getActiveSheet()->getStyle("C4:H6")->applyFromArray($left_style);
+			
+			$styleArray = array(
+				'borders' => array(
+				'allborders' => array(
+					'style' => PHPExcel_Style_Border::BORDER_THIN
+				)
+				)
+			);
+			// pr($lastCol);
+			$lastCol = $object->getActiveSheet()->getHighestColumn();
+			$object->getActiveSheet()->getStyle('A7:'.$lastCol.--$row)->applyFromArray($styleArray);
+			$object->getActiveSheet()->getStyle('A7:'.$lastCol.$row)->getAlignment()->setWrapText(true);
+			$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment;filename="Danh sách sinh viên.xls"');
+			$object_writer->save('php://output');
+		}
+		else {
+			setMessages('error', 'Không có sinh viên nào để xuất');
+			redirect(base_url().'listsv');
 		}
 
-
-		$styleArray = array(
-			'alignment' => array(
-				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-				'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-			),
-			'font'  => array(
-				'size'  => 14,
-				'name'  => 'Times New Roman'
-			 )
-		);
-		$object->getDefaultStyle()
-			->applyFromArray($styleArray);
-
-		$left_style = array(
-			'alignment' => array(
-				'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_LEFT
-			),
-			'font'  => array(
-				'size'  => 14,
-				'name'  => 'Times New Roman'
-			 )
-		);
 		
-		$object->getActiveSheet()->getStyle("D10:E".$row)->applyFromArray($left_style);
-		$object->getActiveSheet()->getStyle("C4:H6")->applyFromArray($left_style);
-		
-		$styleArray = array(
-			'borders' => array(
-			  'allborders' => array(
-				'style' => PHPExcel_Style_Border::BORDER_THIN
-			  )
-			)
-		  );
-		// pr($lastCol);
-		$lastCol = $object->getActiveSheet()->getHighestColumn();
-		$object->getActiveSheet()->getStyle('A7:'.$lastCol.--$row)->applyFromArray($styleArray);
-		$object->getActiveSheet()->getStyle('A7:'.$lastCol.$row)->getAlignment()->setWrapText(true);
-		$object_writer = PHPExcel_IOFactory::createWriter($object, 'Excel5');
-		header('Content-Type: application/vnd.ms-excel');
-		header('Content-Disposition: attachment;filename="Danh sách sinh viên.xls"');
-		$object_writer->save('php://output');
 	}
 
 	public function ExportListWord($conditional)
