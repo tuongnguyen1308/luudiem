@@ -286,7 +286,7 @@ class Clistsv extends MY_Controller
 			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Ngành:');
 			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['sTenNganh']);
 			$object->getActiveSheet()->setCellValueByColumnAndRow(2, $row, 'Năm Học:');
-			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['sNam']);
+			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['iNamTotNghiep']);
 			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Khoá Học:');
 			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['iKhoa']);
 			
@@ -439,7 +439,7 @@ class Clistsv extends MY_Controller
 	public function ExportListWord($conditional)
 	{
 		// pr($conditional);
-		$dssv = $this->Mlistsv->getListSV($conditional);
+		$dssv = $this->Mlistsv->getListSV($conditional, '', 'word');
 		$data = array(
 			// 'mode'	=> $this->input->get('mode'),
 			'dssv'	=> $dssv,

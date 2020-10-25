@@ -31,6 +31,7 @@ class Minbangdiem extends MY_Model
 		$res = $this->db->get('tbl_nhaphoc')->row_array();
 
 		$this->db->where('FK_iMaNhapHoc', $masv);
+		$this->db->where('iDT10 is not null');
 		$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 		$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 		$this->db->order_by('iSTT','asc');

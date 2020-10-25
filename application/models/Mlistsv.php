@@ -89,7 +89,7 @@ class Mlistsv extends MY_Model
 	public function getNamHoc($conditional)
 	{
 		$this->db->where($conditional);
-		$this->db->order_by('sNam', 'asc');
+		// $this->db->order_by('sNam', 'asc');
 		return $this->db->get('tbl_ctdt')->result_array();
 	}
 	public function getDonVi($conditional)
@@ -153,7 +153,7 @@ class Mlistsv extends MY_Model
 		return $res;
 	}
 
-	public function getListSV($conditional = '', $keyword = '')
+	public function getListSV($conditional = '', $keyword = '', $type = '')
 	{
 		if ($keyword) {
 			$this->db->like('PK_iMaNhapHoc', $keyword);
@@ -174,10 +174,13 @@ class Mlistsv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, iKhoa, sNam');
+		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
+			if ($type == 'word') {
+				$this->db->where('iDT10 is not null');
+			}
 			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');

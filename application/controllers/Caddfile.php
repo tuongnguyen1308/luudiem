@@ -28,7 +28,11 @@ class Caddfile extends MY_Controller
         else if ($this->input->post('submit_import')) {
             $this->importSV();
 		}
-		
+		switch ($this->input->post('action')) {
+			case 'submit_import_ajax':
+				$this->import_excel_ajax();
+				break;
+		}
         $data = array(
 			'currentpage'	=> 'add'
 		);
@@ -37,7 +41,7 @@ class Caddfile extends MY_Controller
         $this->load->view('layouts/Vlayout', $temp);
     }
 
-    public function importSV()
+	public function importSV()
     {
         // pr($_FILES['importExcel']);
         if (isset($_FILES['importExcel']['name'])) {
@@ -54,11 +58,12 @@ class Caddfile extends MY_Controller
 			$ctdt = array(
 				'sTenBac'	=> $worksheet->getCellByColumnAndRow(3,4)->getValue(),
 				'sTenDonVi'	=> $worksheet->getCellByColumnAndRow(3,5)->getValue(),
-				'sNam'		=> $worksheet->getCellByColumnAndRow(3,6)->getValue(),
 				'sTenHe'	=> $worksheet->getCellByColumnAndRow(7,4)->getValue(),
 				'sTenNganh'	=> $worksheet->getCellByColumnAndRow(7,5)->getValue(),
 				'iKhoa'		=> $worksheet->getCellByColumnAndRow(7,6)->getValue(),
 			);
+			$namtotnghiep	= $worksheet->getCellByColumnAndRow(3,6)->getValue();
+			$this->Maddfile->insertNamTN($namtotnghiep);
 			$ctdt = $this->Maddfile->insertCTDT($ctdt);
 			#endregion
 
@@ -148,7 +153,8 @@ class Caddfile extends MY_Controller
 					'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-4,$row)->getValue()))),
 					'sSoQuyetDinhTotNghiep'		=> $worksheet->getCellByColumnAndRow($lastColumn-3,$row)->getValue(),
 					'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-2,$row)->getValue()))),
-					'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
+					'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue(),
+					'FK_iNamTN'					=> $namtotnghiep
 				);
 				if (!in_array($nhaphoc, $ds_nhaphoc)) {
 					if (!in_array($nhaphoc['PK_iMaNhapHoc'], $ds_ma_nhaphoc)) {
@@ -217,8 +223,293 @@ class Caddfile extends MY_Controller
 			$this->returnWithMess($res, $new_sv['sMaSV']);
         }
 	}
-
 	
+    // public function importSV()
+    // {
+    //     // pr($_FILES['importExcel']);
+    //     if (isset($_FILES['importExcel']['name'])) {
+	// 		$res = 0;
+    //         $path = $_FILES['importExcel']['tmp_name'];
+    //         $object = PHPExcel_IOFactory::load($path);
+    //         $worksheet = $object->getSheet(0);
+	// 		$lastRow		= $worksheet->getHighestRow();
+	// 		$hightestCol	= $worksheet->getHighestColumn();
+	// 		$lastColumn		= PHPExcel_Cell::columnIndexFromString($hightestCol);
+	// 		// pr($hightestCol);
+			
+	// 		#region insert_ctdt
+	// 		$ctdt = array(
+	// 			'sTenBac'	=> $worksheet->getCellByColumnAndRow(3,4)->getValue(),
+	// 			'sTenDonVi'	=> $worksheet->getCellByColumnAndRow(3,5)->getValue(),
+	// 			'sNam'		=> $worksheet->getCellByColumnAndRow(3,6)->getValue(),
+	// 			'sTenHe'	=> $worksheet->getCellByColumnAndRow(7,4)->getValue(),
+	// 			'sTenNganh'	=> $worksheet->getCellByColumnAndRow(7,5)->getValue(),
+	// 			'iKhoa'		=> $worksheet->getCellByColumnAndRow(7,6)->getValue(),
+	// 		);
+	// 		$ctdt = $this->Maddfile->insertCTDT($ctdt);
+	// 		#endregion
+
+	// 		$sttmon = array();
+			
+	// 		#region import_mon
+	// 		$so_cot = $ctdt['sTenHe'] == 'Đào tạo từ xa' ? 5 : 3;
+	// 		for ($column = 7, $i = 1; $column < $lastColumn - 13; $column += $so_cot) {
+	// 			$mon = array(
+	// 				'sTenMon'	=> $worksheet->getCellByColumnAndRow($column, 7)->getValue(),
+	// 				'sTenMonTA'	=> $worksheet->getCellByColumnAndRow($column, 8)->getValue(),
+	// 				'iSoTinChi'	=> $worksheet->getCellByColumnAndRow($column, 9)->getValue()
+	// 			);
+				
+	// 			array_push($sttmon, $this->Maddfile->insertMon($mon, $ctdt, $i++));
+	// 			// pr($mon);
+
+	// 		}
+	// 		#endregion
+	// 		#region insert_sinh_vien_lop
+	// 		//ds insert
+	// 		$ds_lop		= array();
+	// 		$ds_sv		= array();
+	// 		$ds_nhaphoc	= array();
+	// 		$ds_sv_lop	= array();
+	// 		$ds_diem	= array();
+			
+	// 		//ds update
+	// 		$ds_lop_update		= array();
+	// 		$ds_sv_update		= array();
+	// 		$ds_nhaphoc_update	= array();
+	// 		$ds_sv_lop_update	= array();
+	// 		$ds_diem_update		= array();
+
+	// 		//ds đã có
+	// 		$ds_ma_lop		= $this->Maddfile->get_ds_ma_lop();
+	// 		$ds_ma_sv		= $this->Maddfile->get_ds_ma_sv();
+	// 		$ds_ma_nhaphoc	= $this->Maddfile->get_ds_ma_nhaphoc();
+	// 		$ds_ma_sv_lop	= $this->Maddfile->get_ds_ma_sv_lop();
+	// 		$ds_ma_diem		= $this->Maddfile->get_ds_ma_diem();
+
+	// 		for ($row = 11; $row <= $lastRow; $row++) {
+	// 			$ten_lop = $worksheet->getCellByColumnAndRow(1,$row)->getValue();
+	// 			$lop = array(
+	// 				'PK_iMaLop'	=> $ctdt['FK_iMaKhoa'].'_'.$ten_lop,
+	// 				'sTenLop'	=> $ten_lop,
+	// 				'FK_iMaKhoa'=> $ctdt['FK_iMaKhoa']
+	// 			);
+	// 			if (!in_array($lop, $ds_lop)) {
+	// 				if (!in_array($lop['PK_iMaLop'], $ds_ma_lop)) {
+	// 					array_push($ds_lop, $lop);
+	// 				}
+	// 				else {
+	// 					array_push($ds_lop_update, $lop);
+	// 				}
+	// 			}
+
+	// 			$sv = array(
+	// 				'PK_iMaSV'	=> $worksheet->getCellByColumnAndRow(2,$row)->getValue(),
+	// 				'sHo'		=> $worksheet->getCellByColumnAndRow(3,$row)->getValue(),
+	// 				'sTen'		=> $worksheet->getCellByColumnAndRow(4,$row)->getValue(),
+	// 				'dNgaySinh'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow(5,$row)->getValue()))),
+	// 				'sGioiTinh'	=> $worksheet->getCellByColumnAndRow(6,$row)->getValue(),
+	// 			);
+	// 			if (!in_array($sv, $ds_sv)) {
+	// 				if (!in_array($sv['PK_iMaSV'], $ds_ma_sv)) {
+	// 					array_push($ds_sv, $sv);
+	// 				}
+	// 				else {
+	// 					array_push($ds_sv_update, $sv);
+	// 				}
+	// 			}
+
+	// 			$nhaphoc = array(
+	// 				'PK_iMaNhapHoc'	=> $sv['PK_iMaSV'],
+	// 				'FK_iMaSV'		=> $sv['PK_iMaSV'],
+	// 				'FK_iMaKhoa'	=> $ctdt['FK_iMaKhoa'],
+	// 				'sGDTC'			=> $worksheet->getCellByColumnAndRow($lastColumn-13,$row)->getValue(),
+	// 				'sGDQP'			=> $worksheet->getCellByColumnAndRow($lastColumn-12,$row)->getValue(),
+	// 				'sCDRNN'		=> $worksheet->getCellByColumnAndRow($lastColumn-11,$row)->getValue(),
+	// 				'sXLRenLuyen'	=> $worksheet->getCellByColumnAndRow($lastColumn-10,$row)->getValue(),
+	// 				'sTBCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-9,$row)->getValue(),
+	// 				'iSoTCTL'		=> $worksheet->getCellByColumnAndRow($lastColumn-8,$row)->getValue(),
+	// 				'iSoTCConNo'	=> $worksheet->getCellByColumnAndRow($lastColumn-7,$row)->getValue(),
+	// 				'sXepLoaiTotNghiep'			=> $worksheet->getCellByColumnAndRow($lastColumn-6,$row)->getValue(),
+	// 				'sSoQuyetDinhDauVao'		=> $worksheet->getCellByColumnAndRow($lastColumn-5,$row)->getValue(),
+	// 				'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-4,$row)->getValue()))),
+	// 				'sSoQuyetDinhTotNghiep'		=> $worksheet->getCellByColumnAndRow($lastColumn-3,$row)->getValue(),
+	// 				'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$worksheet->getCellByColumnAndRow($lastColumn-2,$row)->getValue()))),
+	// 				'iSoHocPhanThiLai'			=> $worksheet->getCellByColumnAndRow($lastColumn-1,$row)->getValue()
+	// 			);
+	// 			if (!in_array($nhaphoc, $ds_nhaphoc)) {
+	// 				if (!in_array($nhaphoc['PK_iMaNhapHoc'], $ds_ma_nhaphoc)) {
+	// 					array_push($ds_nhaphoc, $nhaphoc);
+	// 				}
+	// 				else {
+	// 					array_push($ds_nhaphoc_update, $nhaphoc);
+	// 				}
+	// 			}
+				
+	// 			$sv_lop = array(
+	// 				'PK_iMaSVLop'	=> $lop['PK_iMaLop'].'_'.$nhaphoc['PK_iMaNhapHoc'],
+	// 				'FK_iMaNhapHoc'	=> $nhaphoc['PK_iMaNhapHoc'],
+	// 				'FK_iMaLop'		=> $lop['PK_iMaLop']
+	// 			);
+	// 			if (!in_array($sv_lop, $ds_sv_lop)) {
+	// 				if (!in_array($sv_lop['PK_iMaSVLop'], $ds_ma_sv_lop)) {
+	// 					array_push($ds_sv_lop, $sv_lop);
+	// 				}
+	// 				else {
+	// 					array_push($ds_sv_lop_update, $sv_lop);
+	// 				}
+	// 			}
+
+	// 			for ($column = 7, $i = 0, $count_attr = 0; $column < $lastColumn - 13;) {
+	// 				$diem = array(
+	// 					'PK_iMaDiem'	=> $nhaphoc['PK_iMaNhapHoc'].'_'.$sttmon[$i],
+	// 					'iDT10'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+	// 					'sDTChu'		=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+	// 					'iDT4'			=> $worksheet->getCellByColumnAndRow($column++, $row)->getValue(),
+	// 					'FK_iMaNhapHoc'	=> $nhaphoc['PK_iMaNhapHoc'],
+	// 					'FK_iMaMonCTDT'	=> $sttmon[$i++],
+	// 				);
+	// 				if ($so_cot == 5) {
+	// 					$diem['sLichSu']	= $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+	// 					$diem['sNoiMien']	= $worksheet->getCellByColumnAndRow($column++, $row)->getValue();
+	// 				}
+	// 				if (!in_array($diem, $ds_diem)) {
+	// 					if (!in_array($diem['PK_iMaDiem'], $ds_ma_diem)) {
+	// 						array_push($ds_diem, $diem);
+	// 					}
+	// 					else {
+	// 						array_push($ds_diem_update, $diem);
+	// 					}
+	// 				}
+	// 			}
+	// 		}
+	// 		$this->Maddfile->insert_ds_lop($ds_lop);
+			
+	// 		$this->Maddfile->insert_ds_sv($ds_sv);
+	// 		$this->Maddfile->insert_ds_nhaphoc($ds_nhaphoc);
+	// 		$this->Maddfile->insert_ds_sv_lop($ds_sv_lop);
+	// 		$this->Maddfile->insert_ds_diem($ds_diem);
+	// 		$this->Maddfile->update_ds_lop($ds_lop);
+			
+	// 		$this->Maddfile->update_ds_sv($ds_sv_update);
+	// 		$this->Maddfile->update_ds_nhaphoc($ds_nhaphoc_update);
+	// 		$this->Maddfile->update_ds_sv_lop($ds_sv_lop_update);
+			
+	// 		$this->Maddfile->update_ds_diem($ds_diem_update);
+			
+
+	// 		#endregion
+
+	// 		$res = 1;
+	// 		$this->returnWithMess($res, $new_sv['sMaSV']);
+    //     }
+	// }
+
+
+	public function import_excel_ajax()
+    {
+		$list_ma_sv = array();
+        
+		$res = 0;
+		
+		#region insert_ctdt
+		$ctdt = array(
+			'sTenBac'	=> $this->input->post('bac'),
+			'sTenDonVi'	=> $this->input->post('khoa'),
+			'sNam'		=> $this->input->post('namhoc'),
+			'sTenHe'	=> $this->input->post('he'),
+			'sTenNganh'	=> $this->input->post('nganh'),
+			'iKhoa'		=> $this->input->post('khoahoc'),
+		);
+		$ctdt = $this->Maddfile->insertCTDT($ctdt);
+		
+		#endregion
+
+		#region import_mon
+		$list_mon		= $this->input->post('list_mon');
+		$list_mon_ta	= $this->input->post('list_mon_ta');
+		$list_stc		= $this->input->post('list_stc');
+		
+		$sttmon = array();
+		for ($i = 0; $i < count($list_mon); $i++) {
+			$mon = array(
+				'sTenMon'	=> $list_mon[$i],
+				'sTenMonTA'	=> $list_mon_ta[$i],
+				'iSoTinChi'	=> $list_stc[$i]
+			);
+			
+			array_push($sttmon, $this->Maddfile->insertMon($mon, $ctdt, $i));
+			// pr($mon);
+
+		}
+		#endregion
+
+		$response = array(
+			'sttmon'	=> $sttmon,
+			'ctdt'		=> $ctdt
+		);
+
+		echo json_encode($response);
+		exit();
+	}
+	
+	public function import_diem()
+	{
+		
+		#region insert_sinh_vien_diem
+		$sttmon	= $this->input->post('stt_mon');
+		$sv		= $this->input->post('sv');
+		$ctdt	= $this->input->post('ctdt');
+		// pr($ctdt);
+		// pr($sv);
+		
+		$data_sv = array(
+			'FK_iMaKhoa'				=> $ctdt['FK_iMaKhoa'],
+			'iSTT'						=> $sv[0],
+			'sTenLop'					=> $sv[1],
+			'sMaSV'						=> $sv[2],
+			'sHo'						=> $sv[3],
+			'sTen'						=> $sv[4],
+			'dNgaySinh'					=> implode('-', array_reverse(explode('/',$sv[5]))),
+			'sGioiTinh'					=> $sv[6],
+			'sGDTC'						=> $sv[7],
+			'sGDQP'						=> $sv[8],
+			'sCDRNN'					=> $sv[9],
+			'sXLRenLuyen'				=> $sv[10],
+			'sTBCTL'					=> $sv[11],
+			'iSoTCTL'					=> $sv[12],
+			'iSoTCConNo'				=> $sv[13],
+			'sXepLoaiTotNghiep'			=> $sv[14],
+			'sSoQuyetDinhDauVao'		=> $sv[15],
+			'dNgayQuyetDinhDauVao'		=> implode('-', array_reverse(explode('/',$sv[16]))),
+			'sSoQuyetDinhTotNghiep'		=> $sv[17],
+			'dNgayQuyetDinhTotNghiep'	=> implode('-', array_reverse(explode('/',$sv[18]))),
+			'iSoHocPhanThiLai'			=> $sv[19]
+		);
+
+		$data_sv['FK_iMaNhapHoc'] = $this->Maddfile->insert_sv($data_sv);
+		
+		$this->Maddfile->insertSV_Lop($data_sv, $ctdt);
+		
+		$list_diem_1_sv = $sv[20];
+		for ($i = 0, $j = 0; $i < count($list_diem_1_sv);) {
+			$diem = array(
+				'iDT10'			=> $list_diem_1_sv[$i++],
+				'sDTChu'		=> $list_diem_1_sv[$i++],
+				'iDT4'			=> $list_diem_1_sv[$i++],
+				'sLichSu'		=> $list_diem_1_sv[$i++],
+				'sNoiMien'		=> $list_diem_1_sv[$i++],
+				'FK_iMaNhapHoc'	=> $data_sv['FK_iMaNhapHoc'],
+				'FK_iMaMonCTDT'	=> $sttmon[$j],
+			);
+			// pr($diem);
+			$res = $this->Maddfile->insertDiem($diem, $sttmon[$j++]);
+		}
+		echo json_encode($res?1:0);
+		exit();
+		#endregion
+
+	}
 
 	
 

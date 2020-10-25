@@ -47,13 +47,30 @@ class Maddfile extends MY_Model
 		}
 	}
 
+	public function insertNamTN($namtotnghiep)
+	{
+		$this->db->where('PK_iNamTN', $namtotnghiep);
+		$duplicate = $this->db->get('tbl_namtn')->row_array();
+		// pr($namtotnghiep);
+		if (!$duplicate) {
+			$insert = array(
+				'PK_iNamTN' => $namtotnghiep
+			);
+			// pr($insert);
+			$this->db->insert('tbl_namtn', $insert);
+			return $insert['PK_iNamTN'];
+		}
+		else {
+			return $duplicate['PK_iNamTN'];
+		}
+	}
+
 	public function insert_ctdt($ctdt)
 	{
 		$conditional = array(
 			'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
 			'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
-			'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
-			'sNam'			=> $ctdt['sNam']
+			'FK_iMaHe'		=> $ctdt['FK_iMaHe']
 		);
 		$this->db->where($conditional);
 		$duplicate = $this->db->get('tbl_ctdt')->row_array();
@@ -63,8 +80,7 @@ class Maddfile extends MY_Model
 				'PK_iMaCTDT'	=> time()%10000000 . rand(100,999),
 				'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
 				'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
-				'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
-				'sNam'			=> $ctdt['sNam']
+				'FK_iMaHe'		=> $ctdt['FK_iMaHe']
 			);
 			$this->db->insert('tbl_ctdt', $insert);
 			return $insert['PK_iMaCTDT'];
@@ -73,6 +89,33 @@ class Maddfile extends MY_Model
 			return $duplicate['PK_iMaCTDT'];
 		}
 	}
+
+	// public function insert_ctdt($ctdt)
+	// {
+	// 	$conditional = array(
+	// 		'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
+	// 		'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
+	// 		'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
+	// 		'sNam'			=> $ctdt['sNam']
+	// 	);
+	// 	$this->db->where($conditional);
+	// 	$duplicate = $this->db->get('tbl_ctdt')->row_array();
+
+	// 	if (!$duplicate) {
+	// 		$insert = array(
+	// 			'PK_iMaCTDT'	=> time()%10000000 . rand(100,999),
+	// 			'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
+	// 			'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
+	// 			'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
+	// 			'sNam'			=> $ctdt['sNam']
+	// 		);
+	// 		$this->db->insert('tbl_ctdt', $insert);
+	// 		return $insert['PK_iMaCTDT'];
+	// 	}
+	// 	else {
+	// 		return $duplicate['PK_iMaCTDT'];
+	// 	}
+	// }
 	public function insert_donvi_ctdt($ctdt)
 	{
 		$conditional = array(

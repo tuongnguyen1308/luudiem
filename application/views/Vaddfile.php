@@ -16,6 +16,7 @@
                                 <span id="file-name" class="mr-1"></span>
                                 <label id="file-label" class="btn btn-success btn-sm cursor-pointer mb-0 mr-2" for="fileExcel"><i class="fa fa-upload"></i>Thêm file Excel</label>
                                 <button type="button" id="btn_preview" class="btn btn-sm btn-primary mr-2"><i class="fa fa-eye"></i> Xem trước file excel</button>
+                                <button type="button" id="btn_submit" class="btn btn-sm btn-primary mr-2"><i class="fa fa-save"></i> Lưu bằng ajax</button>
                                 <button name="submit_import" id="submit_import" value="1" type="submit" class="btn btn-sm btn-primary"><i class="fa fa-save"></i> Lưu vào hệ thống</button>
                             </div>
                             <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />

@@ -163,7 +163,7 @@
     --input-padding-x: 1.5rem;
     --input-padding-y: .75rem;
   }
-  
+  .mb-xl-3,.my-xl-3{margin-bottom:1rem!important}
   #wrapper {
     font-family: Helvetica, sans-serif;
   }
