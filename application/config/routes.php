@@ -18,3 +18,4 @@ $route['listsv']					= 'Clistsv';
 $route['listsv/:num']				= 'Clistsv/index/$1';
 $route['inbangdiem']    			= 'Cinbangdiem';
 $route['statistical']				= 'Cstatistical';
+$route['dssv']				        = 'Cdssv';

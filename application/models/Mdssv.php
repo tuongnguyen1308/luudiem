@@ -1,6 +1,6 @@
 <?php
 
-class Mlistsv extends MY_Model
+class Mdssv extends MY_Model
 {
     public function checkAccount($username)
     {

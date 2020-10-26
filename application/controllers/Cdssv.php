@@ -8,20 +8,24 @@ ini_set('max_input_vars', 6000);
  * 5 col
  */
 
-class Clistsv extends MY_Controller
+class Cdssv extends MY_Controller
 {
-    public $Mlistsv;
+    public $Mdssv;
     public $id = '';
 	public function __construct()
 	{
 		parent::__construct();
-        $this->load->model('Mlistsv', 'Mlistsv');
+        $this->load->model('Mdssv', 'Mdssv');
         $this->load->library('excel');
-		$this->Mlistsv = new Mlistsv();
+		$this->Mdssv = new Mdssv();
 	}
     
     public function index()
     {
+		//check post input
+		if (!$this->input->post('seeDetail') && !$this->input->get('page') && !$this->input->post('btn_search')) {
+			redirect(base_url().'statistical');
+		}
 		$present_page = 1;
 		$per_page = 10;
 		if ($this->input->get('page')) {
@@ -39,134 +43,39 @@ class Clistsv extends MY_Controller
 		else if ($this->input->post('btn_export')) {
 			$this->getDataToExport();
 		}
-		else switch ($this->input->post('action')) {
-			case 'getNamHoc':
-				$this->getNamHoc();
-				break;
-			
-			case 'getDonVi':
-				$this->getDonVi();
-				break;
-			
-			case 'getKhoaHoc':
-				$this->getKhoaHoc();
-				break;
-			case 'submit_import':
-				$this->importExcelAjax();
-				break;
-			case 'import_diem':
-				$this->import_diem();
-				break;
-		}
-		
-		$conditional	= '';
-		$listBac		= $this->Mlistsv->getList('tbl_bac');
-		$listHe			= $this->Mlistsv->getList('tbl_he');
-		$listNganh		= $this->Mlistsv->getList('tbl_nganh');
-		$listNam		= '';
-		$listDonVi		= '';
-		$listKhoaHoc	= '';
-		
-		$keyword = '';
-		
-		if ($this->input->post('btn_filter') || $this->input->post('btn_search') || $this->input->post('btn_delete') || $this->input->post('btn_export_word')) {
-			$bac = $this->input->post('bac');
-			$he = $this->input->post('he');
-			$nganh = $this->input->post('nganh');
-			$namhoc = $this->input->post('namhoc');
-			$donvi = $this->input->post('donvi');
-			$khoahoc = $this->input->post('khoahoc');
-
-			if ($bac) {
-				$conditional['FK_iMaBac'] = $bac;
-			}
-			if ($he) {
-				$conditional['FK_iMaHe'] = $he;
-			}
-			if ($nganh) {
-				$conditional['FK_iMaNganh'] = $nganh;
-			}
-			if ($namhoc && $nganh && $he && $bac) {
-				$listNam		= $this->Mlistsv->getNamHoc($conditional);
-				$conditional['sNam']		= $namhoc;
-			}
-			if ($donvi) {
-				$listDonVi		= $this->Mlistsv->getDonVi($conditional);
-				$conditional['PK_iMaDVCTDT'] = $donvi;
-			}
-			if ($khoahoc) {
-				$listKhoaHoc	= $this->Mlistsv->getKhoaHoc($conditional['PK_iMaDVCTDT']);
-				$conditional['PK_iMaKhoa']	= $khoahoc;
-			}
-			$present_page = 1;
-			$keyword = $this->input->post('inp_keyword');
-			$this->session->set_flashdata('keyword', $keyword);
-		}
-		if ($this->input->get('filter')) {
-			// pr($this->session->flashdata('keyword'));
-			$conditional = $this->session->flashdata('filter');
-			$keyword = $this->session->flashdata('keyword');
-			$tmp_cdt = array(
-				'FK_iMaBac'		=> $conditional['FK_iMaBac'],
-				'FK_iMaHe'		=> $conditional['FK_iMaHe'],
-				'FK_iMaNganh'	=> $conditional['FK_iMaNganh']
-			);
-			$listNam		= $this->Mlistsv->getNamHoc($tmp_cdt);
-			$tmp_cdt['sNam']		= $conditional['sNam'];
-			$listDonVi		= $this->Mlistsv->getDonVi($tmp_cdt);
-			$tmp_cdt['PK_iMaDVCTDT'] = $conditional['PK_iMaDVCTDT'];
-			$listKhoaHoc	= $this->Mlistsv->getKhoaHoc($tmp_cdt['PK_iMaDVCTDT']);
-			$tmp_cdt['PK_iMaKhoa']	= $conditional['PK_iMaKhoa'];
-			$this->session->set_flashdata('filter', $conditional);
-		}
-
-		// $keyword = '';
-		// if ($this->input->post('btn_filter') || $this->input->post('btn_search')) {
-		// 	$keyword = $this->input->post('inp_keyword');
-		// 	$this->session->set_flashdata('keyword', $keyword);
+		$keyword		= '';
+		// if ($this->session->flashdata('keyword') != '' ) {
+		// 	$keyword = $this->session->flashdata('keyword');
 		// }
-		if ($this->input->post('btn_delete')) {
-			// pr($conditional);
-			$this->deleteSVWith($conditional, $keyword);
-		}
-		if ($this->input->post('btn_export_word')) {
-			// pr($conditional);
-			$this->ExportListWord($conditional);
-		}
-		if (!$this->input->post('btn_reset_filter')) {
-			$list_sv = $this->Mlistsv->getDSSVIn($conditional, $keyword, $present_page);
-			// pr($list_sv);
-			$this->session->set_flashdata('filter', $conditional);
-			$this->session->set_flashdata('keyword', $keyword);
-			// pr($this->session->flashdata('filter'));
-		}
-		else {
-			$list_sv = $this->Mlistsv->getDSSVIn('', '', $present_page);
-			redirect(current_url());
-		}
+		$keyword = $this->input->post('inp_keyword');
+		$conditional	= array(
+			'PK_iMaNganh'	=> $this->input->post('PK_iMaNganh') != '' ? $this->input->post('PK_iMaNganh') : $this->session->flashdata('filter')['PK_iMaNganh'],
+			'FK_iNamTN'		=> $this->input->post('FK_iNamTN') != '' ? $this->input->post('FK_iNamTN') : $this->session->flashdata('filter')['FK_iNamTN']
+		);
+		// pr($keyword);
+		// pr($conditional);
+		
+		$this->session->set_flashdata('keyword', $keyword);
+		$this->session->set_flashdata('filter', $conditional);
+
+		$list_sv = $this->Mdssv->getDSSVIn($conditional, $keyword, $present_page);
 
         $session = $this->session->userdata('user');
         $data = array(
-			'currentpage'	=> 'list',
+			'currentpage'	=> 'statistical',
 			'present_page'	=> $present_page,
-			'countPage'		=> $this->Mlistsv->countPage($conditional, $keyword, $present_page),
+			'countPage'		=> $this->Mdssv->countPage($conditional, $keyword, $present_page),
 			'DSSV'          => $list_sv,
-			'listBac'		=> $listBac,
-			'listHe'		=> $listHe,
-			'listNganh'		=> $listNganh,
-			'listNam'		=> $listNam,
-			'listDonVi'		=> $listDonVi,
-			'listKhoaHoc'	=> $listKhoaHoc,
-			'list_filter'	=> $conditional,
+			'conditional'	=> $conditional,
 			'keyword'		=> $this->session->flashdata('keyword'),
 			'filter'		=> $this->session->flashdata('filter'),
-			'countSV'		=> count($this->Mlistsv->getListSV($conditional, $keyword))
+			'countSV'		=> count($this->Mdssv->getListSV($conditional, $keyword))
 		);
 		// pr($data['list_filter']);
 		// pr($data['countPage']);
         //pr($data['DSSV']);
         $temp['data'] = $data;
-        $temp['template'] = 'Vlistsv';
+        $temp['template'] = 'Vdssv';
         $this->load->view('layouts/Vlayout', $temp);
     }
 
@@ -177,7 +86,7 @@ class Clistsv extends MY_Controller
 			'FK_iMaHe'		=> $this->input->post('FK_iMaHe'),
 			'FK_iMaNganh'	=> $this->input->post('FK_iMaNganh')
 		);
-		$db = $this->Mlistsv->getNamHoc($fk_arr);
+		$db = $this->Mdssv->getNamHoc($fk_arr);
 		exit(json_encode($db));
 	}
 	public function getDonVi()
@@ -189,7 +98,7 @@ class Clistsv extends MY_Controller
 			'sNam'			=> $this->input->post('sNam')
 		);
 		// pr($conditional);
-		$db = $this->Mlistsv->getDonVi($conditional);
+		$db = $this->Mdssv->getDonVi($conditional);
 		exit(json_encode($db));
 	}
 	public function getKhoaHoc()
@@ -198,25 +107,25 @@ class Clistsv extends MY_Controller
 			'FK_iMaDVCTDT'	=> $this->input->post('FK_iMaDVCTDT')
 		);
 		// pr($conditional);
-		$db = $this->Mlistsv->getKhoaHoc($conditional['FK_iMaDVCTDT']);
+		$db = $this->Mdssv->getKhoaHoc($conditional['FK_iMaDVCTDT']);
 		exit(json_encode($db));
 	}
 
 	public function delSV()
 	{
 		$masv = $this->input->post('delSV');
-		$res = $this->Mlistsv->delSV($masv);
+		$res = $this->Mdssv->delSV($masv);
 		if ($res > 0) {
 			setMessages('success', 'Đã xoá sinh viên');
 		}
-		redirect(base_url().'listsv');
+		redirect(base_url().'dssv');
 	}
 	
 	public function deleteSVWith($conditional, $keyword)
 	{
-		$res = $this->Mlistsv->deleteSVWith($conditional, $keyword);
+		$res = $this->Mdssv->deleteSVWith($conditional, $keyword);
 		setMessages('success', 'Đã xoá ' . $res . ' sinh viên');
-		redirect(base_url().'listsv');
+		redirect(base_url().'dssv');
 	}
 
 	public function returnWithMess($res, $list_ma_sv, $masv = '')
@@ -244,10 +153,10 @@ class Clistsv extends MY_Controller
 		}
 		if($res < 0) {
 			foreach ($list_ma_sv as $key => $value) {
-				$this->Mlistsv->delSV($value);
+				$this->Mdssv->delSV($value);
 			}
 		}
-		redirect(base_url().'listsv');
+		redirect(base_url().'dssv');
 	}
 
 	public function getDataToExport()
@@ -256,7 +165,7 @@ class Clistsv extends MY_Controller
 		$maKhoaHoc = $this->input->post('khoahoc');
 		// pr($maKhoaHoc);
 		$conditional['PK_iMaKhoa'] = $maKhoaHoc;
-		$sv = $this->Mlistsv->getListSV($conditional);
+		$sv = $this->Mdssv->getListSV($conditional);
 		// pr($sv);
 
 		if ($sv) {
@@ -576,7 +485,7 @@ class Clistsv extends MY_Controller
 		}
 		else {
 			setMessages('error', 'Không có sinh viên nào để xuất');
-			redirect(base_url().'listsv');
+			redirect(base_url().'dssv');
 		}
 
 		
@@ -585,7 +494,7 @@ class Clistsv extends MY_Controller
 	public function ExportListWord($conditional)
 	{
 		// pr($conditional);
-		$dssv = $this->Mlistsv->getListSV($conditional, '', 'word');
+		$dssv = $this->Mdssv->getListSV($conditional, '', 'word');
 		$data = array(
 			// 'mode'	=> $this->input->get('mode'),
 			'dssv'	=> $dssv,

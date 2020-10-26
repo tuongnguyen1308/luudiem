@@ -48,7 +48,7 @@
                                     <td class="">{$value.sTenNganh}</td>
                                     <td class="text-center">{$value.iSoLuongSV}</td>
                                     <td class="text-center">
-										<form action="{$url}listsv" method="post">
+										<form action="{$url}dssv" method="post" target="blank">
                                             <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
                                             <input type="hidden" name="PK_iMaNganh" value="{$value.PK_iMaNganh}" />
                                             <input type="hidden" name="FK_iNamTN" value="{$value.FK_iNamTN}" />
