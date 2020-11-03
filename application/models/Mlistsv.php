@@ -37,7 +37,7 @@ class Mlistsv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('PK_iMaNhapHoc, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
+		$this->db->select('PK_iMaNhapHoc, PK_iMaSVLop, PK_iMaSV, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
 		$data	= $this->db->get('tbl_nhaphoc')->result_array();
 		$res	= floor(count($data)/10);
 		if (count($data)%10 > 0) $res++;
@@ -68,11 +68,11 @@ class Mlistsv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('PK_iMaNhapHoc, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
+		$this->db->select('PK_iMaNhapHoc, PK_iMaSVLop, PK_iMaSV, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
-			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->where('FK_iMaSVLop', $value['PK_iMaSVLop']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 			$this->db->order_by('iSTT','asc');
@@ -174,14 +174,14 @@ class Mlistsv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, FK_iNamTN');
+		$this->db->select('tbl_nhaphoc.*, PK_iMaSVLop, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, FK_iNamTN');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
 			if ($type == 'word') {
 				$this->db->where('iDT10 is not null');
 			}
-			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->where('FK_iMaSVLop', $value['PK_iMaSVLop']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 			$this->db->order_by('iSTT','asc');

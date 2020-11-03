@@ -90,4 +90,4 @@
         }
     }
 </style>
-<script src="{$url}assets/plugins/js/vlistsv.js"></script>
+<script src="{$url}assets/plugins/js/vaddfile.js"></script>

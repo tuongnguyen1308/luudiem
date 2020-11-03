@@ -204,8 +204,9 @@ class Clistsv extends MY_Controller
 
 	public function delSV()
 	{
-		$masv = $this->input->post('delSV');
-		$res = $this->Mlistsv->delSV($masv);
+		
+		$sv = $this->input->post('sv');
+		$res = $this->Mlistsv->delSV($sv);
 		if ($res > 0) {
 			setMessages('success', 'Đã xoá sinh viên');
 		}

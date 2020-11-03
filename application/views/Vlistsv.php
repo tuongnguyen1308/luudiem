@@ -122,7 +122,7 @@
                                     <td class="text-center">{($present_page-1)*10 + $key+1}</td>
                                     <td class="text-center">{$value.iKhoa}</td>
                                     <td class="">{$value.sTenLop}</td>
-                                    <td class="">{$value.PK_iMaNhapHoc}</td>
+                                    <td class="">{$value.PK_iMaSV}</td>
                                     <td class="">{$value.sHo} {$value.sTen}</td>
                                     <td class="text-center">{date('d/m/Y', strtotime($value.dNgaySinh))}</td>
                                     <td class="">{$value.sGioiTinh}</td>
@@ -139,6 +139,9 @@
                                                 </button>
                                             </a>
 											<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                                            <input type="hidden" name="sv[PK_iMaSV]" value="{$value.PK_iMaSV}">
+                                            <input type="hidden" name="sv[PK_iMaSVLop]" value="{$value.PK_iMaSVLop}">
+                                            <input type="hidden" name="sv[PK_iMaNhapHoc]" value="{$value.PK_iMaNhapHoc}">
 											<button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaNhapHoc}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
 												<i class="fa fa-trash" aria-hidden="true" title="Xoá"></i>
 											</button>

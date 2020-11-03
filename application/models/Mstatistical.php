@@ -94,23 +94,25 @@ class Mstatistical extends MY_Model
 		// pr($res);
 
 		$rowspan_res = '';
-		foreach ($res as $tenhe => $ds_nganh) {
-			foreach ($ds_nganh as $tennganh => $ds_khoa) {
-				foreach ($ds_khoa as $tenkhoa => $slsv) {
-					if (isset($rowspan_res[$tenhe.'_rowspan'])) {
-						$rowspan_res[$tenhe.'_rowspan']++;
+		if ($res != null) {
+			foreach ($res as $tenhe => $ds_nganh) {
+				foreach ($ds_nganh as $tennganh => $ds_khoa) {
+					foreach ($ds_khoa as $tenkhoa => $slsv) {
+						if (isset($rowspan_res[$tenhe.'_rowspan'])) {
+							$rowspan_res[$tenhe.'_rowspan']++;
+						}
+						else {
+							$rowspan_res[$tenhe.'_rowspan'] = 1;
+							$rowspan_res[$tenhe] = '';
+						}
+						if (isset($rowspan_res[$tenhe][$tennganh])) {
+							$rowspan_res[$tenhe][$tennganh]++;
+						}
+						else {
+							$rowspan_res[$tenhe][$tennganh] = 1;
+						}
+						
 					}
-					else {
-						$rowspan_res[$tenhe.'_rowspan'] = 1;
-						$rowspan_res[$tenhe] = '';
-					}
-					if (isset($rowspan_res[$tenhe][$tennganh])) {
-						$rowspan_res[$tenhe][$tennganh]++;
-					}
-					else {
-						$rowspan_res[$tenhe][$tennganh] = 1;
-					}
-					
 				}
 			}
 		}

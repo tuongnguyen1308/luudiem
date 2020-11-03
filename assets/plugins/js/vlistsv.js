@@ -244,6 +244,10 @@ $(document).ready(() => {
 		namhoc	= Object.values(excelRows[4])[3];
 		khoahoc	= Object.values(excelRows[4])[7];
 		let so_cot = he == 'Đào tạo từ xa' ? 5 : 3;
+
+		// var insert_bac = {
+		// 	'PK_iMaBac' : bac
+		// }
 		
 		
 		$.post(

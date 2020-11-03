@@ -20,8 +20,8 @@
                                     <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
                                     <input type="hidden" name="PK_iMaNganh" value="{$conditional.PK_iMaNganh}">
                                     <input type="hidden" name="FK_iNamTN" value="{$conditional.FK_iNamTN}">
-                                    <input type="text" value="assd" class="form-control mr-2 disabled" disabled>
-                                    <input type="text" value="assd" class="form-control mr-2 disabled" disabled>
+                                    <input type="text" value="{$thongtinloc.sTenNganh}" class="form-control mr-2 disabled" disabled>
+                                    <input type="text" value="{$thongtinloc.FK_iNamTN}" class="form-control mr-2 disabled" disabled>
                                     <input value="{$keyword}" type="text" class="form-control mr-2" name="inp_keyword" placeholder="Nhập tên hoặc mã sv" autofocus>
                                     <button name="btn_search" value="1" class="btn btn-sm btn-primary mr-2" type="submit" id="btn_search">Tìm kiếm</button>
                                     <button name="btn_export_word" value="1" class="btn btn-sm mr-2 btn-success" type="submit">Xuất word theo danh sách</button>
@@ -53,7 +53,7 @@
                                     <td class="text-center">{($present_page-1)*10 + $key+1}</td>
                                     <td class="text-center">{$value.iKhoa}</td>
                                     <td class="">{$value.sTenLop}</td>
-                                    <td class="">{$value.PK_iMaNhapHoc}</td>
+                                    <td class="">{$value.PK_iMaSV}</td>
                                     <td class="">{$value.sHo} {$value.sTen}</td>
                                     <td class="text-center">{date('d/m/Y', strtotime($value.dNgaySinh))}</td>
                                     <td class="">{$value.sGioiTinh}</td>
@@ -69,7 +69,10 @@
                                                     <i class="fa fa-eye" aria-hidden="true" title="Xem điểm"></i>
                                                 </button>
                                             </a>
-											<input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                                            <input type="hidden" name="{$csrf['name']}" value="{$csrf['hash']}" />
+                                            <input type="hidden" name="sv[PK_iMaSV]" value="{$value.PK_iMaSV}">
+                                            <input type="hidden" name="sv[PK_iMaSVLop]" value="{$value.PK_iMaSVLop}">
+                                            <input type="hidden" name="sv[PK_iMaNhapHoc]" value="{$value.PK_iMaNhapHoc}">
 											<button class="btn btn-sm btn-danger" type="submit" title="Xoá" value="{$value.PK_iMaNhapHoc}" name="delSV" onclick="return confirm('Bạn chắc chắn muốn xóa?')">
 												<i class="fa fa-trash" aria-hidden="true" title="Xoá"></i>
 											</button>
@@ -88,7 +91,7 @@
                         </tbody>
                     </table>
                     {if $countPage > 0}
-                    <nav class="float-left"> Hiển thị {count($DSSV)}/{$countSV} sinh viên</nav>
+                    <!-- <nav class="float-left"> Hiển thị {count($DSSV)}/{$countSV} sinh viên</nav> -->
 					<nav class="float-right">
 						<ul class="pagination mb-0">
 							<li class="page-item m-1 mr-3">Trang {$present_page}/{$countPage}</li>

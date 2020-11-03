@@ -68,11 +68,11 @@ class Mdssv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('PK_iMaNhapHoc, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
+		$this->db->select('PK_iMaNhapHoc, PK_iMaSVLop, PK_iMaSV, sGDTC, sGDQP, sCDRNN, sXLRenLuyen, sTBCTL, iSoTCTL, iSoTCConNo, sXepLoaiTotNghiep, sSoQuyetDinhTotNghiep, dNgayQuyetDinhTotNghiep, sSoQuyetDinhDauVao, dNgayQuyetDinhDauVao, iSoHocPhanThiLai, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
-			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->where('FK_iMaSVLop', $value['PK_iMaSVLop']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 			$this->db->order_by('iSTT','asc');
@@ -106,19 +106,19 @@ class Mdssv extends MY_Model
 		$this->db->order_by('iKhoa', 'desc');
 		return $this->db->get('tbl_khoa')->result_array();
 	}
-	public function delSV($masv)
+	public function delSV($sv)
 	{
 		$res = 0;
-		$this->db->where('FK_iMaNhapHoc', $masv);
+		$this->db->where('FK_iMaSVLop', $sv['PK_iMaSVLop']);
 		$this->db->delete('tbl_diem');
 		$res += $this->db->affected_rows();
-		$this->db->where('FK_iMaNhapHoc', $masv);
+		$this->db->where('PK_iMaSVLop', $sv['PK_iMaSVLop']);
 		$this->db->delete('tbl_sinhvien_lop');
 		$res += $this->db->affected_rows();
-		$this->db->where('PK_iMaNhapHoc', $masv);
+		$this->db->where('PK_iMaNhapHoc', $sv['PK_iMaNhapHoc']);
 		$this->db->delete('tbl_nhaphoc');
 		$res += $this->db->affected_rows();
-		$this->db->where('PK_iMaSV', $masv);
+		$this->db->where('PK_iMaSV', $sv['PK_iMaSV']);
 		$this->db->delete('tbl_sinhvien');
 		$res += $this->db->affected_rows();
 		return $res > 0 ? 1 : 0;
@@ -130,7 +130,7 @@ class Mdssv extends MY_Model
 		if ($keyword) {
 			$this->db->like('PK_iMaNhapHoc', $keyword);
 			$this->db->or_like('concat(sHo," ",sTen)', $keyword);
-			$this->db->or_like('PK_iMaNhapHoc', $keyword);
+			$this->db->or_like('PK_iMaSVLop', $keyword);
 		}
 		$this->db->where($conditional);
 		$this->db->join('tbl_sinhvien','PK_iMaSV = FK_iMaSV', 'inner');
@@ -143,12 +143,12 @@ class Mdssv extends MY_Model
 		$this->db->join('tbl_nganh','PK_iMaNganh = FK_iMaNganh', 'inner');
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
-		$this->db->select('PK_iMaNhapHoc');
+		$this->db->select('PK_iMaNhapHoc, PK_iMaSVLop, PK_iMaSV');
 		$list_ma_sv = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($list_ma_sv);
 		$res = 0;
 		foreach ($list_ma_sv as $k => $v) {
-			$res += $this->delSV($v['PK_iMaNhapHoc']);
+			$res += $this->delSV($v);
 		}
 		return $res;
 	}
@@ -174,18 +174,18 @@ class Mdssv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, FK_iNamTN');
+		$this->db->select('tbl_nhaphoc.*, PK_iMaSVLop, PK_iMaSV, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, FK_iNamTN');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
 			if ($type == 'word') {
 				$this->db->where('iDT10 is not null');
 			}
-			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->where('FK_iMaSVLop', $value['PK_iMaSVLop']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 			$this->db->order_by('iSTT','asc');
-			$this->db->select('sTenMon, sTenMonTA, iSoTinChi, iDT10, sDTChu, iDT4, sLichSu, sNoiMien');
+			$this->db->select('sTenMon, sTenMonTA, iSoTinChi, iDT10, sDTChu, iDT4, sLichSu, sNoiMien, iSTT');
 			$res[$key]['diem'] = $this->db->get('tbl_diem')->result_array();
 		}
 		return $res;
@@ -203,11 +203,11 @@ class Mdssv extends MY_Model
 		$this->db->join('tbl_bac','PK_iMaBac = FK_iMaBac', 'inner');
 		$this->db->join('tbl_he','PK_iMaHe = FK_iMaHe', 'inner');
 		$this->db->order_by('iKhoa desc, sTenLop asc, sTen asc, sHo asc');
-		$this->db->select('tbl_nhaphoc.*, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, iKhoa');
+		$this->db->select('tbl_nhaphoc.*, PK_iMaSVLop, PK_iMaSV, sHo, sTen, dNgaySinh, sGioiTinh, sTenLop, iKhoa, sTenNganh, sTenBac, sTenHe, sTenDonVi, iKhoa');
 		$res = $this->db->get('tbl_nhaphoc')->result_array();
 		// pr($res);
 		foreach ($res as $key => $value) {
-			$this->db->where('FK_iMaNhapHoc', $value['PK_iMaNhapHoc']);
+			$this->db->where('FK_iMaSVLop', $value['PK_iMaSVLop']);
 			$this->db->join('tbl_mon_ctdt','PK_iMaMon_CTDT = FK_iMaMonCTDT', 'inner');
 			$this->db->join('tbl_mon','PK_iMaMon = FK_iMaMon', 'inner');
 			$this->db->order_by('iSTT','asc');
@@ -217,5 +217,13 @@ class Mdssv extends MY_Model
 		return $res;
 	}
 
+	public function getThongTinLoc($conditional)
+	{
+		$this->db->where('PK_iMaNganh',$conditional['PK_iMaNganh']);
+		$this->db->select('sTenNganh');
+		$res = $this->db->get('tbl_nganh')->row_array();
+		$res['FK_iNamTN'] = $conditional['FK_iNamTN'];
+		return $res;
+	}
 
 }

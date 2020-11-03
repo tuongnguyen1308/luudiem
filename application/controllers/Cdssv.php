@@ -23,26 +23,8 @@ class Cdssv extends MY_Controller
     public function index()
     {
 		//check post input
-		if (!$this->input->post('seeDetail') && !$this->input->get('page') && !$this->input->post('btn_search')) {
-			redirect(base_url().'statistical');
-		}
 		$present_page = 1;
 		$per_page = 10;
-		if ($this->input->get('page')) {
-			$present_page = $this->input->get('page');
-		}
-        if ($this->input->post('submitImport')) {
-            $this->importSV();
-		}
-		else if ($this->input->post('delSV')) {
-            $this->delSV();
-		}
-		else if ($this->input->post('download_demo')) {
-			$this->download_demo();
-		}
-		else if ($this->input->post('btn_export')) {
-			$this->getDataToExport();
-		}
 		$keyword		= '';
 		// if ($this->session->flashdata('keyword') != '' ) {
 		// 	$keyword = $this->session->flashdata('keyword');
@@ -52,6 +34,27 @@ class Cdssv extends MY_Controller
 			'PK_iMaNganh'	=> $this->input->post('PK_iMaNganh') != '' ? $this->input->post('PK_iMaNganh') : $this->session->flashdata('filter')['PK_iMaNganh'],
 			'FK_iNamTN'		=> $this->input->post('FK_iNamTN') != '' ? $this->input->post('FK_iNamTN') : $this->session->flashdata('filter')['FK_iNamTN']
 		);
+		if (!$conditional['PK_iMaNganh']) {
+			redirect(base_url().'statistical');
+		}
+		if ($this->input->get('page')) {
+			$present_page = $this->input->get('page');
+		}
+        if ($this->input->post('submitImport')) {
+            $this->importSV();
+		}
+		else if ($this->input->post('delSV')) {
+            $this->delSV();
+		}
+		else if ($this->input->post('btn_export')) {
+			$this->getDataToExport();
+		}
+		if ($this->input->post('btn_export_word')) {
+			$this->ExportListWord($conditional);
+		}
+		else if ($this->input->post('btn_delete')) {
+			$this->deleteSVWith($conditional,$keyword);
+		}
 		// pr($keyword);
 		// pr($conditional);
 		
@@ -59,17 +62,18 @@ class Cdssv extends MY_Controller
 		$this->session->set_flashdata('filter', $conditional);
 
 		$list_sv = $this->Mdssv->getDSSVIn($conditional, $keyword, $present_page);
-
+		
         $session = $this->session->userdata('user');
         $data = array(
 			'currentpage'	=> 'statistical',
 			'present_page'	=> $present_page,
+			'thongtinloc'	=> $this->Mdssv->getThongTinLoc($conditional),
 			'countPage'		=> $this->Mdssv->countPage($conditional, $keyword, $present_page),
 			'DSSV'          => $list_sv,
 			'conditional'	=> $conditional,
 			'keyword'		=> $this->session->flashdata('keyword'),
 			'filter'		=> $this->session->flashdata('filter'),
-			'countSV'		=> count($this->Mdssv->getListSV($conditional, $keyword))
+			// 'countSV'		=> count($this->Mdssv->getListSV($conditional, $keyword))
 		);
 		// pr($data['list_filter']);
 		// pr($data['countPage']);
@@ -113,19 +117,19 @@ class Cdssv extends MY_Controller
 
 	public function delSV()
 	{
-		$masv = $this->input->post('delSV');
-		$res = $this->Mdssv->delSV($masv);
+		$sv = $this->input->post('sv');
+		$res = $this->Mdssv->delSV($sv);
 		if ($res > 0) {
 			setMessages('success', 'Đã xoá sinh viên');
 		}
-		redirect(base_url().'dssv');
+		redirect(base_url().'statistical');
 	}
 	
 	public function deleteSVWith($conditional, $keyword)
 	{
 		$res = $this->Mdssv->deleteSVWith($conditional, $keyword);
 		setMessages('success', 'Đã xoá ' . $res . ' sinh viên');
-		redirect(base_url().'dssv');
+		redirect(base_url().'statistical');
 	}
 
 	public function returnWithMess($res, $list_ma_sv, $masv = '')
@@ -162,9 +166,10 @@ class Cdssv extends MY_Controller
 	public function getDataToExport()
 	{
 		$session = $this->session->userdata('user');
-		$maKhoaHoc = $this->input->post('khoahoc');
-		// pr($maKhoaHoc);
-		$conditional['PK_iMaKhoa'] = $maKhoaHoc;
+		$conditional	= array(
+			'PK_iMaNganh'	=> $this->session->flashdata('filter')['PK_iMaNganh'],
+			'FK_iNamTN'		=> $this->session->flashdata('filter')['FK_iNamTN']
+		);
 		$sv = $this->Mdssv->getListSV($conditional);
 		// pr($sv);
 
@@ -220,7 +225,9 @@ class Cdssv extends MY_Controller
 			}
 			$to_row = 7;
 			foreach ($sv[0]['diem'] as $k => $v) {
-				// pr($v);
+				if ($v['iSTT'] == 35) {
+					break;
+				}
 				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
 				$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
 				$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
@@ -239,9 +246,6 @@ class Cdssv extends MY_Controller
 					$from_col++;
 					$to_col++;
 				}
-				if ($sv[0]['diem'][34] == $v) {
-					break;
-				}
 			}
 			$to_col = $from_col;
 			$to_row = 10;
@@ -253,22 +257,21 @@ class Cdssv extends MY_Controller
 				// pr($v);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, ++$k);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTenLop']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaNhapHoc']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaSV']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHo']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTen']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgaySinh'])));
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGioiTinh']);
 				foreach ($v['diem'] as $stt => $diem) {
-					// pr($diem);
+					if ($diem['iSTT'] == 35) {
+						break;
+					}
 					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT10']);
 					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sDTChu']);
 					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT4']);
 					if ($so_cot_trong_mon == 5) {
 						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sLichSu']);
 						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sNoiMien']);
-					}
-					if ($v['diem'][34] == $diem) {
-						break;
 					}
 				}
 				$row++;
@@ -318,7 +321,7 @@ class Cdssv extends MY_Controller
 
 
 			//SHEET 2 ======================================================================================================================================================
-			// $object->createSheet();
+			$object->createSheet();
 			$object->setActiveSheetIndex(1);
 
 
@@ -346,16 +349,7 @@ class Cdssv extends MY_Controller
 			$object->getActiveSheet()->setCellValueByColumnAndRow(3, $row, $sv[0]['FK_iNamTN']);
 			$object->getActiveSheet()->setCellValueByColumnAndRow(6, $row, 'Khoá Học:');
 			$object->getActiveSheet()->setCellValueByColumnAndRow(7, $row++, $sv[0]['iKhoa']);
-			
 
-
-
-			//check Hệ đào tạo:
-			$so_cot_trong_mon = $sv[0]['sTenHe'] == 'Đào tạo từ xa' ? 5 : 3;
-
-
-
-			$table_columns = array("STT", "Lớp", "Mã SV", "Họ và", "Tên", "Ngày sinh", "Giới");
 			foreach($table_columns as $field)
 			{
 				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
@@ -367,26 +361,49 @@ class Cdssv extends MY_Controller
 				$to_col++;
 			}
 			$to_row = 7;
-			for ($i=35; $i < count($sv[0]['diem']); $i++) { 
-				$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
-				$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
-				$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['sTenMon']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['sTenMonTA']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['iSoTinChi']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
-				if ($so_cot_trong_mon == 5) {
-					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Lịch sử');
-					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Nơi Miễn');
-				}
-				$row-=3;
-				for ($i=1; $i <= $so_cot_trong_mon; $i++) { 
-					$from_col++;
-					$to_col++;
+			foreach ($sv[0]['diem'] as $k => $v) {
+				if ($v['iSTT'] > 34) {
+					$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+					$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
+					$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMon']);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['sTenMonTA']);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $v['iSoTinChi']);
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
+					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
+					if ($so_cot_trong_mon == 5) {
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Lịch sử');
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Nơi Miễn');
+					}
+					$row-=3;
+					for ($i=1; $i <= $so_cot_trong_mon; $i++) { 
+						$from_col++;
+						$to_col++;
+					}
 				}
 			}
+			// for ($i=35; $i < count($sv[0]['diem']); $i++) { 
+			// 	$object->getActiveSheet()->mergeCells($from_col.$from_row.':'.$to_col.$to_row);
+			// 	$object->getActiveSheet()->mergeCells($from_col.($from_row+1) .':'.$to_col.($to_row+1));
+			// 	$object->getActiveSheet()->mergeCells($from_col.($from_row+2) .':'.$to_col.($to_row+2));
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['sTenMon']);
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['sTenMonTA']);
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column, $row++, $sv[0]['diem'][$i]['iSoTinChi']);
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 10');
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT Chữ');
+			// 	$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'ĐT 4');
+			// 	if ($so_cot_trong_mon == 5) {
+			// 		$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Lịch sử');
+			// 		$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, 'Nơi Miễn');
+			// 	}
+			// 	$row-=3;
+			// 	for ($i=1; $i <= $so_cot_trong_mon; $i++) { 
+			// 		$from_col++;
+			// 		$to_col++;
+			// 	}
+			// }
+
 
 			$to_col = $from_col;
 			$to_row = 10;
@@ -409,18 +426,20 @@ class Cdssv extends MY_Controller
 				// pr($v);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, ++$k);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTenLop']);
-				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaNhapHoc']);
+				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['PK_iMaSV']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sHo']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sTen']);
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, date('d/m/Y', strtotime($v['dNgaySinh'])));
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGioiTinh']);
-				for ($i=35; $i < count($v['diem']); $i++) { 
-					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['diem'][$i]['iDT10']);
-					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['diem'][$i]['sDTChu']);
-					$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['diem'][$i]['iDT4']);
-					if ($so_cot_trong_mon == 5) {
-						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['diem'][$i]['sLichSu']);
-						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['diem'][$i]['sNoiMien']);
+				foreach ($v['diem'] as $stt => $diem) {
+					if ($diem['iSTT'] > 34) {
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT10']);
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sDTChu']);
+						$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['iDT4']);
+						if ($so_cot_trong_mon == 5) {
+							$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sLichSu']);
+							$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $diem['sNoiMien']);
+						}
 					}
 				}
 				$object->getActiveSheet()->setCellValueByColumnAndRow($column++, $row, $v['sGDTC']);

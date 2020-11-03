@@ -90,32 +90,6 @@ class Maddfile extends MY_Model
 		}
 	}
 
-	// public function insert_ctdt($ctdt)
-	// {
-	// 	$conditional = array(
-	// 		'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
-	// 		'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
-	// 		'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
-	// 		'sNam'			=> $ctdt['sNam']
-	// 	);
-	// 	$this->db->where($conditional);
-	// 	$duplicate = $this->db->get('tbl_ctdt')->row_array();
-
-	// 	if (!$duplicate) {
-	// 		$insert = array(
-	// 			'PK_iMaCTDT'	=> time()%10000000 . rand(100,999),
-	// 			'FK_iMaNganh'	=> $ctdt['FK_iMaNganh'],
-	// 			'FK_iMaBac'		=> $ctdt['FK_iMaBac'],
-	// 			'FK_iMaHe'		=> $ctdt['FK_iMaHe'],
-	// 			'sNam'			=> $ctdt['sNam']
-	// 		);
-	// 		$this->db->insert('tbl_ctdt', $insert);
-	// 		return $insert['PK_iMaCTDT'];
-	// 	}
-	// 	else {
-	// 		return $duplicate['PK_iMaCTDT'];
-	// 	}
-	// }
 	public function insert_donvi_ctdt($ctdt)
 	{
 		$conditional = array(
@@ -316,7 +290,36 @@ class Maddfile extends MY_Model
 	#endregion
 
 
-	#region insert_diem
-	#endregion
+
+	public function get_ds_ma($table_name, $field_name)
+	{
+		echo ($field_name);
+		$res = $this->db->select($field_name)->get($table_name)->result_array();
+		return array_column($res, $field_name);
+	}
+
+	public function insert_table($table_name, $data)
+	{
+		// echo json_encode($data);
+		// echo "<pre>" . $data . "</pre>";
+		$this->db->where($data);
+		$duplicate = $this->db->get($table_name)->row_array();
+		if (!$duplicate) {
+			$this->db->insert($table_name, $data);
+			return $this->db->affected_rows();
+		}
+		else return 0;
+	}
+	
+	public function insert_batch_table($table_name, $data)
+	{
+		// $this->db->trans_start();
+		$this->db->insert_batch($table_name, $data);
+		// $this->db->trans_complete();        
+		// return ($this->db->trans_status() === FALSE)? FALSE:TRUE;
+		
+	}
+
+
 
 }
